@@ -628,10 +628,12 @@ function renderGroupTableR(tableId, group, labelCol){
   }).join('');
   el.innerHTML = head+rows;
 }
+const GC_NAME_MAP = {'LUANA':'Luana', 'GC2':'Willian', 'GC1':'GC1 (vaga)', 'SUPERVISOR':'Supervisão'};
+function gcName(key){ return GC_NAME_MAP[key] || key || '—'; }
 function buildResultadosGcFilter(){
   const sel = document.getElementById('filter-resultados-gc');
   const gcs = Array.from(new Set(ICP44.map(d=>d.gc).filter(Boolean))).sort();
-  sel.innerHTML = '<option value="all">Todos</option>' + gcs.map(g=>`<option value="${g}">${g}</option>`).join('');
+  sel.innerHTML = '<option value="all">Todos</option>' + gcs.map(g=>`<option value="${g}">${gcName(g)}</option>`).join('');
   sel.addEventListener('change', renderResultadosDetail);
 }
 function renderResultadosDetail(){
@@ -644,7 +646,7 @@ function renderResultadosDetail(){
   const el = document.getElementById('table-resultados-detail');
   let head = `<tr><th>Dental</th><th>Classificação</th><th>Cluster</th><th>Executivo</th><th>GC</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">%</th><th>Status</th></tr>`;
   let body = recs.map(r=>`<tr>
-      <td>${r.dental}</td><td>${r.top_class||'—'}</td><td>${r.cluster||'—'}</td><td>${r.executivo||'—'}</td><td>${r.gc||'—'}</td>
+      <td>${r.dental}</td><td>${r.top_class||'—'}</td><td>${r.cluster||'—'}</td><td>${r.executivo||'—'}</td><td>${gcName(r.gc)}</td>
       <td class="num">${r.temDado?fmtBRLr(r.meta):'—'}</td>
       <td class="num">${(r.temDado && !isFuturePeriod)?fmtBRLr(r.real):(r.temDado?'—':'—')}</td>
       <td class="num">${(r.temDado && !isFuturePeriod)?fmtPctR(r.ating_pct):'—'}</td>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Trade American Burrs — Modelo do Departamento</title>
+<style>
+:root{
+  --red:#C00000; --red-dark:#8f0000; --ink:#1a1a1a; --paper:#faf9f7; --card:#ffffff;
+  --line:#e7e2db; --muted:#6b6459; --gold:#c99a3d; --green:#2f7d4f; --amber:#b3781c; --sky:#3f7fb3; --grey:#9a948a;
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:'Montserrat',Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:'Montserrat',Arial,sans-serif; margin:0;}
+
+.topbar{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%); color:#fff; padding:28px 32px 0;}
+.eyebrow{font-size:11px; letter-spacing:2.5px; text-transform:uppercase; opacity:.85; font-weight:600;}
+.topbar h1{font-size:26px; font-weight:800; margin-top:8px;}
+.topbar .sub{font-size:13.5px; opacity:.92; margin-top:8px; max-width:760px; line-height:1.55;}
+
+.nav{display:flex; gap:6px; margin-top:24px; overflow-x:auto; padding-bottom:2px;}
+.nav-btn{background:rgba(255,255,255,.12); color:#fff; border:none; border-radius:10px 10px 0 0; padding:12px 18px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:background .15s; flex-shrink:0;}
+.nav-btn:hover{background:rgba(255,255,255,.2);}
+.nav-btn.active{background:var(--paper); color:var(--red-dark);}
+
+.wrap{max-width:1180px; margin:0 auto; padding:36px 24px 70px;}
+.panel-view{display:none;}
+.panel-view.active{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+.hero-obj{background:var(--card); border:2px solid var(--red); border-radius:14px; padding:30px 34px; margin-bottom:28px;}
+.hero-obj .tag{display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--red-dark); background:#fbe7e5; padding:4px 12px; border-radius:12px; margin-bottom:14px;}
+.hero-obj p{font-size:17px; line-height:1.65; margin:0; max-width:820px;}
+.hero-obj p + p{margin-top:14px;}
+.hero-obj b{color:var(--red-dark);}
+.hero-obj .obj-list{margin:14px 0; padding-left:22px;}
+.hero-obj .obj-list li{font-size:17px; line-height:1.6; margin-bottom:4px;}
+.cluster-note{font-size:12px; color:var(--muted); margin:8px 0 0; font-style:italic;}
+
+.bubble-row{display:flex; align-items:flex-start; justify-content:center; gap:34px; flex-wrap:wrap; margin:26px 0 4px; padding:10px 0 4px;}
+.bubble-item{display:flex; flex-direction:column; align-items:center; width:160px;}
+.bubble{border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 6px 16px rgba(0,0,0,.1); transition:transform .2s;}
+.bubble:hover{transform:scale(1.05);}
+.bubble .bnum{font-size:26px; font-weight:800;}
+.bubble.ouro{background:radial-gradient(circle at 35% 30%, #e0b658, var(--gold));}
+.bubble.a{background:radial-gradient(circle at 35% 30%, #e2504a, var(--red-dark));}
+.bubble.b{background:radial-gradient(circle at 35% 30%, #5a9fd6, var(--sky));}
+.bubble.c{background:radial-gradient(circle at 35% 30%, #4a9068, var(--green));}
+.bubble-label{font-size:12.5px; font-weight:700; text-align:center; margin-top:12px; color:var(--ink); line-height:1.3;}
+.bubble-growth{font-size:15px; font-weight:800; margin-top:4px;}
+.bubble-growth.ouro{color:var(--gold);}
+.bubble-growth.a{color:var(--red-dark);}
+.bubble-growth.b{color:var(--sky);}
+.bubble-growth.c{color:var(--green);}
+@media(max-width:640px){
+  .bubble-row{gap:22px;}
+  .bubble-item{width:120px;}
+}
+
+.section-title{font-size:19px; font-weight:800; margin:8px 0 16px;}
+.section-desc{font-size:13.5px; color:var(--muted); margin:-10px 0 20px; max-width:760px; line-height:1.5;}
+
+.pillars{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:10px;}
+.pillar-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; position:relative;}
+.pillar-num{position:absolute; top:16px; right:18px; font-size:26px; font-weight:800; color:#f0ede7;}
+.pillar-card h3{font-size:14.5px; font-weight:800; color:var(--red-dark); margin-bottom:8px; padding-right:30px;}
+.pillar-card p{font-size:13px; line-height:1.55; color:var(--ink); margin:0;}
+
+.change-card{display:flex; align-items:stretch; gap:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:4px;}
+.change-col{flex:1; padding:22px 26px;}
+.change-arrow{display:flex; align-items:center; justify-content:center; width:50px; flex-shrink:0; background:#f5f2ec; color:var(--grey); font-size:22px;}
+.change-tag{display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:3px 11px; border-radius:12px; margin-bottom:10px;}
+.change-tag.old{background:#eee; color:var(--muted);}
+.change-tag.new{background:#fbe7e5; color:var(--red-dark);}
+.change-col p{font-size:14px; line-height:1.6; margin:0; color:var(--ink);}
+.change-col b{color:var(--red-dark);}
+@media(max-width:700px){
+  .change-card{flex-direction:column;}
+  .change-arrow{width:100%; height:36px;}
+}
+
+.cycle{display:flex; flex-wrap:wrap; gap:0; margin:20px 0;}
+.cycle-step{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; width:210px; margin:0 14px 20px 0; position:relative;}
+.cycle-step .num{width:26px; height:26px; border-radius:50%; background:var(--ink); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+.cycle-step h4{font-size:13px; font-weight:800; margin-bottom:6px;}
+.cycle-step p{font-size:12px; color:var(--muted); line-height:1.5; margin:0;}
+.cycle-arrow{align-self:center; color:var(--line); font-size:20px; margin:0 -4px 20px -6px;}
+
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+.vision-card{background:var(--card); border-radius:12px; padding:26px; border-top:4px solid var(--red);}
+.vision-card.trade{border-top-color:var(--ink);}
+.vision-card h3{font-size:16px; font-weight:800; margin-bottom:14px;}
+.vision-card ul{margin:0; padding-left:18px;}
+.vision-card li{font-size:13.5px; line-height:1.6; margin-bottom:10px; color:var(--ink);}
+.vision-card li b{color:var(--red-dark);}
+.vision-card.trade li b{color:var(--ink);}
+
+.ritual-table, .data-table{width:100%; border-collapse:collapse; font-size:12.8px; background:var(--card); border-radius:10px; overflow:hidden;}
+.ritual-table th, .data-table th{text-align:left; background:var(--ink); color:#fff; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; padding:9px 12px; font-weight:700;}
+.ritual-table td, .data-table td{padding:9px 12px; border-bottom:1px solid var(--line);}
+.ritual-table tr:last-child td, .data-table tr:last-child td{border-bottom:none;}
+.panel-box{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:22px; overflow-x:auto;}
+
+.premio-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:6px;}
+.premio-card{background:#fff; border:1px solid var(--line); border-left:4px solid var(--gold); border-radius:8px; padding:14px 16px;}
+.premio-card h5{font-size:12.5px; font-weight:800; margin-bottom:4px;}
+.premio-card p{font-size:11.5px; color:var(--muted); margin:0; line-height:1.4;}
+
+.playbook-tabs{display:flex; gap:8px; margin-bottom:18px;}
+.pb-tab{border:1px solid var(--line); background:#fff; padding:7px 16px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink);}
+.pb-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+.action-card{background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:12px; overflow:hidden;}
+.action-head{padding:14px 18px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; gap:12px;}
+.action-head h4{font-size:14px; font-weight:800;}
+.action-head .meta{font-size:11.5px; color:var(--muted); flex-shrink:0;}
+.action-body{padding:0 18px 16px; font-size:12.8px; line-height:1.6; display:none;}
+.action-body.open{display:block;}
+.action-body .row{margin-bottom:8px;}
+.action-body b{color:var(--red-dark);}
+.chevron{transition:transform .15s;}
+.action-head.open .chevron{transform:rotate(180deg);}
+
+.org-chart{display:flex; flex-direction:column; align-items:center; gap:0; margin:24px 0 32px;}
+.org-node{background:var(--card); border:2px solid var(--ink); border-radius:10px; padding:12px 22px; text-align:center; margin-bottom:6px;}
+.org-node.top{border-color:var(--red); background:var(--red); color:#fff;}
+.org-node.vaga{border-style:dashed; border-color:var(--grey); background:#f5f2ec;}
+.org-node.vaga .name{color:var(--muted); font-style:italic;}
+.vaga-tag{display:inline-block; font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; padding:2px 8px; border-radius:10px; background:#fbf0d9; color:var(--amber); margin-top:3px;}
+.vaga-tag.vaga-sp{background:#fbe7e5; color:var(--red-dark);}
+
+.calendar-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px;}
+.calendar-card{background:var(--card); border-radius:10px; overflow:hidden; border:1px solid var(--line);}
+.calendar-head{background:var(--sky); color:#fff; font-size:16px; font-weight:800; padding:12px 16px 4px;}
+.calendar-tag{background:var(--sky); color:#fff; font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; padding:0 16px 12px;}
+.calendar-card.fechamento .calendar-head, .calendar-card.fechamento .calendar-tag{background:var(--red-dark);}
+.calendar-card ul{margin:0; padding:14px 18px; list-style:none;}
+.calendar-card li{font-size:12.5px; line-height:1.7; color:var(--ink);}
+.calendar-card li.ritual-item{color:var(--muted); font-size:11.5px; font-style:italic; border-top:1px dashed var(--line); margin-top:6px; padding-top:6px;}
+.exception-box{background:#fdf6d8; border:1px solid #ecd8ad; border-radius:10px; padding:16px 20px;}
+.exception-box b{color:var(--amber); font-size:13.5px;}
+.exception-box p{margin:8px 0 0; font-size:13px; line-height:1.55; color:var(--ink);}
+@media(max-width:800px){ .calendar-row{grid-template-columns:1fr 1fr;} }
+@media(max-width:480px){ .calendar-row{grid-template-columns:1fr;} }
+.org-node .role{font-size:10px; text-transform:uppercase; letter-spacing:.8px; opacity:.75;}
+.org-node .name{font-size:14px; font-weight:800; margin-top:2px;}
+.org-arrow{color:var(--grey); font-size:18px; margin-bottom:6px;}
+.org-row{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+
+.gc-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin:20px 0;}
+.gc-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; cursor:pointer; transition:box-shadow .15s;}
+.gc-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.gc-card.selected{border-color:var(--red); box-shadow:0 4px 14px rgba(192,0,0,.12);}
+.gc-card .papel{font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); font-weight:700;}
+.gc-card .nome{font-size:16px; font-weight:800; margin:4px 0 10px;}
+.gc-card .stat{font-size:12.5px; color:var(--ink); margin-bottom:2px;}
+.gc-card .stat b{color:var(--red-dark);}
+
+.status-pill{display:inline-block; padding:2px 9px; border-radius:12px; font-size:11px; font-weight:700;}
+.status-alta{background:#e5f3ea; color:var(--green);}
+.status-media{background:#fbf0d9; color:var(--amber);}
+.status-baixa{background:#fbe7e5; color:var(--red-dark);}
+.status-super{background:#fbf0d9; color:var(--gold);}
+
+.tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+.tab-btn{border:1px solid var(--line); background:#fff; color:var(--ink); font-family:inherit; font-size:12.5px; font-weight:700; padding:7px 13px; border-radius:20px; cursor:pointer; transition:all .15s;}
+.tab-btn.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+.kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;}
+.kpi{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:13px 14px;}
+.kpi .label{font-size:10px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); font-weight:700;}
+.kpi .value{font-size:19px; font-weight:800; margin-top:6px;}
+.kpi .foot{font-size:10.5px; color:var(--muted); margin-top:3px;}
+
+.ytd-banner{background:var(--ink); border-radius:12px; padding:20px 26px; color:#fff; margin-bottom:20px; display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+.ytd-banner .yb-label{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:#c9c4b8; font-weight:700;}
+.ytd-banner .yb-value{font-size:22px; font-weight:800; margin-top:5px;}
+.ytd-banner .yb-foot{font-size:11px; color:#c9c4b8; margin-top:2px;}
+@media(max-width:760px){ .kpi-row, .ytd-banner{grid-template-columns:repeat(2,1fr);} }
+
+footer{text-align:center; font-size:11px; color:var(--muted); padding:30px 0 10px;}
+@media(max-width:760px){
+  .two-col{grid-template-columns:1fr;}
+  .cycle{justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="eyebrow">American Burrs · Trade Marketing</div>
+  <h1>Modelo do Departamento de Trade</h1>
+  <div class="sub">Conceito, ciclo de ações, visões, rituais, playbook e organograma — tudo num só lugar, pra consulta rápida do time.</div>
+  <div class="nav" id="nav"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- 1. OBJETIVO -->
+  <div class="panel-view" id="view-objetivo">
+    <div class="hero-obj">
+      <span class="tag">Objetivo</span>
+      <p>Aumentar o <b>sell-out</b>: fazer o produto girar do estoque da dental para o dentista.</p>
+      <ul class="obj-list">
+        <li><b>Verba condicionada</b></li>
+        <li><b>Resultado medido</b></li>
+      </ul>
+      <p>Vamos transformar investimento em giro no balcão e no e-commerce das Dentais, comprovando isso com número.</p>
+    </div>
+
+    <div class="section-title" style="margin-top:30px;">Clusterização e crescimento</div>
+    <div class="section-desc">Cada categoria de dental tem uma meta de crescimento própria.</div>
+    <div class="bubble-row">
+      <div class="bubble-item">
+        <div class="bubble ouro" style="width:110px; height:110px;"><span class="bnum">1</span></div>
+        <div class="bubble-label">OURO</div>
+        <div class="bubble-growth ouro">+25%</div>
+      </div>
+      <div class="bubble-item">
+        <div class="bubble a" style="width:110px; height:110px;"><span class="bnum">5</span></div>
+        <div class="bubble-label">A — Estratégica</div>
+        <div class="bubble-growth a">+25%</div>
+      </div>
+      <div class="bubble-item">
+        <div class="bubble b" style="width:110px; height:110px;"><span class="bnum">6</span></div>
+        <div class="bubble-label">B — Growth</div>
+        <div class="bubble-growth b">+40%</div>
+      </div>
+      <div class="bubble-item">
+        <div class="bubble c" style="width:110px; height:110px;"><span class="bnum">14</span></div>
+        <div class="bubble-label">C — Regular / Observação</div>
+        <div class="bubble-growth c">+12%</div>
+      </div>
+    </div>
+    <p class="cluster-note">18 dentais do remanejamento ainda sem cluster definido, aguardando os primeiros dados de sell-out.</p>
+
+    <div class="section-title">5 pontos importantes para o bom funcionamento do Trade</div>
+    <div class="pillars">
+      <div class="pillar-card"><div class="pillar-num">1</div><h3>Gestor de Contas com carteira própria</h3><p>Carteira própria, meta de sell-out nos seus clientes, relacionamento direto e calendário de ações proposto e ativado por ele.</p></div>
+      <div class="pillar-card"><div class="pillar-num">2</div><h3>KPIs claros</h3><p>Todas as ações devem conter metas/supermetas, com objetivos claros e mensuráveis. Serão contabilizadas somente ações formalmente medidas.</p></div>
+      <div class="pillar-card"><div class="pillar-num">3</div><h3>Continuidade das ações</h3><p>A condição de destrave para novas ações é que a anterior precisa estar apurada antes da próxima.</p></div>
+      <div class="pillar-card"><div class="pillar-num">4</div><h3>Comercial e Trade com a mesma meta</h3><p>O executivo tem duas metas fim: sell-in e sell-out — e a de sell-out é a mesma do gestor de contas nas dentais que compartilham.</p></div>
+      <div class="pillar-card"><div class="pillar-num">5</div><h3>Executivo de Contas participa</h3><p>Abre a ação, treina, acompanha e cobra o relatório porque o número também é dele.</p></div>
+    </div>
+
+    <div class="section-title" style="margin-top:34px;">Mudança de critério — de ICP30 para carteira fechada</div>
+    <div class="change-card">
+      <div class="change-col">
+        <div class="change-tag old">Como era</div>
+        <p>Carteira baseada no <b>ICP30</b> (as 30 principais dentais), com abertura pontual para outros clientes — por terem feito sell-in, por relacionamento, ou a pedido do executivo. A porta ficava aberta.</p>
+      </div>
+      <div class="change-arrow">→</div>
+      <div class="change-col">
+        <div class="change-tag new">Como fica</div>
+        <p>Carteira <b>fechada e curada</b>: saem as dentais que não reportam relatório; entram novas, com participação do Comercial, quando julgadas importantes. Trabalhamos <b>somente com as dentais elencadas</b> — hoje, <b>44 dentais</b> no total.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CICLO DAS AÇÕES -->
+  <div class="panel-view" id="view-ciclo">
+    <div class="section-title">O ciclo da ação — o processo único</div>
+    <div class="section-desc">Toda ação passa pelas mesmas 9 etapas, do racional proposto pelo GC até o pagamento apurado. Nenhuma etapa fica fora do trilho.</div>
+    <div class="cycle" id="cycle-steps"></div>
+
+    <div class="section-title" style="margin-top:20px;">O que cada ação paga</div>
+    <div class="section-desc">Resumo dos tipos de premiação usados no cardápio de ações.</div>
+    <div class="premio-grid" id="premio-grid-ciclo"></div>
+  </div>
+
+  <!-- 3. VISÕES -->
+  <div class="panel-view" id="view-visoes">
+    <div class="section-title">Duas visões que se somam</div>
+    <div class="section-desc">O Trade opera em duas frentes separadas que trabalham juntas: quem é dono do cliente, e o programa que dá o padrão por trás de todos.</div>
+    <div class="two-col">
+      <div class="vision-card">
+        <h3>Visão GC (Analista) — foco no cliente</h3>
+        <ul>
+          <li><b>Gestor de clientes da empresa</b>, par do executivo comercial: o executivo cuida do sell-in da conta, o GC cuida do sell-out.</li>
+          <li><b>Carteira com dono e meta de sell-out</b> por cliente.</li>
+          <li><b>Relacionamento</b> com a dental e com o executivo da conta constantemente; conhece as pessoas-chave que fazem as ações acontecerem no PDV.</li>
+          <li><b>Propõe o calendário de ações</b> da própria carteira para bater a própria meta — e responde por ele no resultado.</li>
+          <li>Faz o <b>ciclo inteiro</b> dos seus clientes: propõe → formaliza → acompanha → apura → lança resultados → solicita os pagamentos.</li>
+        </ul>
+      </div>
+      <div class="vision-card trade">
+        <h3>Visão Trade — o programa</h3>
+        <ul>
+          <li>O <b>motor comum</b> entre todos os analistas.</li>
+          <li><b>Playbook de ações</b>, mecânicas com regras e valores padrão; campanhas nacionais e datas (9/9, Mês do Dentista, Black Friday, Festival de Prêmios).</li>
+          <li><b>Racional padrão</b> por ação; a anterior apurada antes da próxima.</li>
+          <li>Materiais/MPDV, artes (com marketing), treinamento (com educacional), plataformas de pagamento.</li>
+          <li>Padrão de apuração, <b>Monday, BI e relatórios</b>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. RITUAIS E PREMIAÇÕES -->
+  <div class="panel-view" id="view-rituais">
+    <div class="section-title">Como o calendário funciona</div>
+    <div class="section-desc">3 semanas de execução + 1 semana de fechamento e planejamento — toda última semana do mês. Os rituais com data certa entram na semana correspondente.</div>
+    <div class="calendar-row">
+      <div class="calendar-card">
+        <div class="calendar-head">Sem 1</div>
+        <div class="calendar-tag">Execução</div>
+        <ul><li>Kickoff de ações macro</li><li>Disparo de comunicação</li><li>OTR (Educacional)</li><li class="ritual-item">+ AB Direct (1º dia útil)</li><li class="ritual-item">+ Reunião com ECs (1º–2º dia útil)</li></ul>
+      </div>
+      <div class="calendar-card">
+        <div class="calendar-head">Sem 2</div>
+        <div class="calendar-tag">Execução</div>
+        <ul><li>Cobertura contínua</li><li>Cobrança de relatórios</li><li>OTR (Educacional)</li></ul>
+      </div>
+      <div class="calendar-card">
+        <div class="calendar-head">Sem 3</div>
+        <div class="calendar-tag">Execução</div>
+        <ul><li>Encerramento e premiação</li><li>Day/Bag eventuais</li><li>OTR (Educacional)</li></ul>
+      </div>
+      <div class="calendar-card fechamento">
+        <div class="calendar-head">Sem 4</div>
+        <div class="calendar-tag">Fechamento + planejamento</div>
+        <ul><li>Fechamento do mês</li><li>Planejamento do mês seguinte</li><li>(HSB → plano trimestral)</li><li class="ritual-item">+ Revisão das carteiras (periódica)</li></ul>
+      </div>
+    </div>
+    <div class="exception-box">
+      <b>★ Exceção HSB — Planejamento trimestral</b>
+      <p>O grupo HSB tem horizonte de 3 meses. O planejamento da HSB acontece na semana 4 do mês 3 do trimestre, conduzido pelo Supervisor (hoje, Braz no interino) com Diretoria + Comercial + Financeiro.</p>
+    </div>
+
+    <div class="section-title" style="margin-top:26px;">Reuniões que se repetem toda semana</div>
+    <div class="panel-box">
+      <table class="ritual-table">
+        <tr><th>Ritual</th><th>Quando</th><th>Quem</th></tr>
+        <tr><td>Reunião de pauta</td><td>Diariamente</td><td>Gerente, Supervisor, Gestores de Conta</td></tr>
+        <tr><td>WPS</td><td>Todas as segundas</td><td>Executivos de contas + Supervisão comercial</td></tr>
+        <tr><td>WBR</td><td>Todas as quintas-feiras</td><td>Gerente, CEO, Supervisor</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- RESULTADOS ICP44 -->
+  <div class="panel-view" id="view-resultados">
+    <div class="section-title">Resultados — ICP44 (Meta Clusterização)</div>
+    <div class="section-desc">Meta, LY e Realizado das 44 dentais atuais, mês a mês até dezembro. Agosto já traz dado real chegando; de setembro em diante são as metas planejadas — realizado fica em branco até o mês acontecer. Onde não há LY nem meta calculada (dentais novas do remanejamento), o campo também fica em branco até a consolidação.</div>
+
+    <div class="ytd-banner" id="ytd-banner-resultados"></div>
+
+    <div class="tabs" id="tabs-resultados"></div>
+    <div class="kpi-row" id="kpi-resultados"></div>
+
+    <div class="two-col">
+      <div class="panel-box">
+        <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:12px;">Por classificação — <span id="resultados-period-label-1"></span></h3>
+        <table class="data-table" id="table-resultados-classif"></table>
+      </div>
+      <div class="panel-box">
+        <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:12px;">Por executivo — <span id="resultados-period-label-2"></span></h3>
+        <table class="data-table" id="table-resultados-exec"></table>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:12px;">Detalhe por dental — <span id="resultados-period-label-3"></span></h3>
+      <div class="filter-row" style="margin-bottom:12px;">
+        <label for="filter-resultados-gc" style="font-size:11.5px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Gestor de Contas</label>
+        <select id="filter-resultados-gc" style="border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-family:inherit; font-size:12.5px;"></select>
+      </div>
+      <div style="max-height:460px; overflow-y:auto;">
+        <table class="data-table" id="table-resultados-detail"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. PLAYBOOK -->
+  <div class="panel-view" id="view-playbook">
+    <div class="section-title">Playbook de ações</div>
+    <div class="section-desc">As mecânicas provadas da casa — clique numa ação para abrir mecânica, premiação, público e onde ela se aplica.</div>
+    <div class="playbook-tabs" id="pb-tabs"></div>
+    <div id="pb-list"></div>
+  </div>
+
+  <!-- 6. ORGANOGRAMA -->
+  <div class="panel-view" id="view-organograma">
+    <div class="section-title">Organograma — hierarquia e carteira</div>
+    <div class="section-desc">Adeilton Braz (Gerente) → Supervisão (vaga, em contratação) → 3 Gestores de Contas (Luana, Willian + 1 vaga em contratação) → Estagiário (vaga). Carteira reorganizada — 45 dentais no total.</div>
+    <div class="org-chart">
+      <div class="org-node top"><div class="role">Gerente do Departamento</div><div class="name">Adeilton Braz</div></div>
+      <div class="org-arrow">↓</div>
+      <div class="org-node vaga"><div class="role">Supervisão</div><div class="name">Vaga — em contratação</div></div>
+      <div class="org-arrow">↓</div>
+      <div class="org-row">
+        <div class="org-node"><div class="role">Gestora de Contas</div><div class="name">Luana</div></div>
+        <div class="org-node vaga"><div class="role">Gestor de Contas</div><div class="name">GC1 — vaga</div></div>
+        <div class="org-node"><div class="role">Gestor de Contas</div><div class="name">Willian</div></div>
+      </div>
+      <div class="org-arrow">↓</div>
+      <div class="org-node vaga"><div class="role">Estagiário</div><div class="name">Vaga — em contratação</div></div>
+    </div>
+
+    <div class="section-title">Papéis — estratégico vs. operacional</div>
+    <div class="panel-box" style="overflow-x:auto;">
+      <table class="ritual-table">
+        <tr><th>Pessoa</th><th>Nível</th><th>Responsabilidades principais</th><th>O que NÃO faz</th><th>Cadência</th></tr>
+        <tr>
+          <td><b>Adeilton Braz</b></td>
+          <td>Gerencial<br><span style="font-size:11px; color:var(--muted);">interino: +tático</span></td>
+          <td>Gerencia o guarda-chuva; no interino opera o programa: aprova ações até R$ 5 mil, conduz o dia 15 e o Comitê Trade, é o GC da carteira Grandes Contas (HSB com Rogério), contrata e treina o supervisor com este material.</td>
+          <td>Não segue como operador após o handover — passa o bastão (decisão de 26/08). Fora do interino: não negocia dental individual, não fecha pagamentos.</td>
+          <td>Diária (bloco ter+qui manhã) · Semanal · Mensal</td>
+        </tr>
+        <tr>
+          <td><b>Supervisor de Trade</b></td>
+          <td>Estratégico + Tático</td>
+          <td>Contas estratégicas (HSB com Rogério, Surya/ELFA, Med Sul, Sorria, Dentalshop) <b>e o resultado de sell-out medido da companhia inteira</b>. Dono do programa: cardápio, verba, campanhas nacionais, padrão de apuração. Lidera os 3 GCs e o estagiário; aprova ações até R$ 1,5 mil; conduz o Comitê Trade e o "Previsto vs Entregue" do dia 15.</td>
+          <td>Não reinventa o modelo nos 90 primeiros dias; não assume as carteiras — os GCs são donos delas.</td>
+          <td>Diária · Semanal · Mensal · Trimestral</td>
+        </tr>
+        <tr>
+          <td><b>GCs</b><br><span style="font-size:11px; color:var(--muted);">Luana · GC1 · Willian</span></td>
+          <td>Gestor de contas</td>
+          <td>Gestor de clientes da sua carteira: relacionamento com as dentais e com os ECs daqueles estados; propõe o calendário de ações para bater a meta de sell-out da carteira; ciclo completo de cada ação (racional → formalização → apuração → pagamento → ROI).</td>
+          <td>Não vira "analista de relatório" nem "analista de ações" (silo proibido); não atende a base fora da carteira (vai para o estagiário); não aprova a própria verba; não roda ação sem o EC.</td>
+          <td>Diária · Semanal</td>
+        </tr>
+        <tr>
+          <td><b>Estagiário de Trade</b></td>
+          <td>Operacional</td>
+          <td>Coleta e organiza relatórios de sell-out, alimenta o BI e as apurações; roda as <b>ações genéricas</b> (cards de WhatsApp, campanhas nacionais, comunicação padrão) para a base fora das carteiras: dentais menores, não-reportantes e clientes do Inside. Tudo que chega ao trade e não é de uma carteira, é dele.</td>
+          <td>Não tem carteira própria nem meta de sell-out; não negocia mecânica nem verba com dental.</td>
+          <td>Diária</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">Carteira por gestor de conta</div>
+    <div class="section-desc">Peso calculado sobre o sell-out Jan–Jul das dentais com dado disponível. Dentais novas do remanejamento ainda sem sell-out entram na contagem, mas não no peso — aparecem marcadas na tabela de detalhe.</div>
+    <div class="gc-grid" id="gc-grid"></div>
+    <div class="panel-box" id="gc-detail-box" style="display:none;">
+      <h3 id="gc-detail-title" style="font-size:15px; margin-bottom:12px;"></h3>
+      <table class="data-table" id="gc-detail-table"></table>
+    </div>
+
+    <div class="section-title" style="margin-top:34px;">Premiação</div>
+    <div class="action-card">
+      <div class="action-head" id="premio-org-head">
+        <h4>Bônus mensal por atingimento — clique para ver os valores</h4>
+        <span class="meta"><span class="chevron">▾</span></span>
+      </div>
+      <div class="action-body" id="premio-org-body">
+        <p style="margin:0 0 14px; font-size:13px; color:var(--muted); line-height:1.55;">O bônus agora é <b>mensal e individual</b> — cada Supervisor ou GC que bater a própria meta ou supermeta recebe, independente do resultado dos demais.</p>
+        <table class="data-table">
+          <tr><th>Papel</th><th>80% da meta</th><th>100% da meta</th><th>Frequência e forma</th></tr>
+          <tr><td>Supervisor</td><td>R$ 800,00</td><td>R$ 1.500,00</td><td rowspan="2">Mensal, pago via Flash</td></tr>
+          <tr><td>Gestores de Contas</td><td>R$ 500,00</td><td>R$ 1.000,00</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>American Burrs · Trade Marketing — modelo construído a partir do conceito do departamento, organograma e playbook de ações</footer>
+
+<script id="data-playbook" type="application/json">[{"tipo": "MACRO", "acao": "Sell out premiado", "duracao": "30 dias", "mecanica": "Ação no cliente que dura 30 dias. Premia pelas vendas gerais do portfólio American Burrs (todos os produtos elegíveis).", "premiacao": "Dinheiro (cartão virtual) — top vendedores premiados.", "alvo": "Cliente final da dental (consultórios)", "onde": "Ouro • A • B"}, {"tipo": "MACRO", "acao": "Produtos foco", "duracao": "10 a 30 dias", "mecanica": "Campanha sobre produtos específicos do portfólio (categorias foco). Vendas focadas em itens estratégicos.", "premiacao": "Dinheiro — premiado por venda do mix foco.", "alvo": "Cliente final da dental", "onde": "A • B • C-Regular"}, {"tipo": "MACRO", "acao": "Bag premiada", "duracao": "1 semana (pode ser quinzenal)", "mecanica": "Vale todo o portfólio AB no período. Premia o atingimento do volume.", "premiacao": "Bag física no valor de R$ 150,00 em brindes (kit churrasco — carne + cerveja).", "alvo": "Cliente final da dental", "onde": "Ouro • A • B • C-Regular • C-Observação"}, {"tipo": "MACRO", "acao": "Week (desestoque)", "duracao": "1 semana", "mecanica": "Ação elaborada em dentais estruturadas. Análise prévia de estoque + aplicação de descontos e brindes nos produtos específicos para reduzir estoque rápido.", "premiacao": "Dinheiro — top 3 em vendas AB recebem premiação.", "alvo": "Cliente final + vendedores da dental", "onde": "Ouro • A • B (estruturada)"}, {"tipo": "MACRO", "acao": "Day (desestoque)", "duracao": "1 a 2 dias", "mecanica": "Versão curta da Week. Foco em produtos específicos, desestoque rápido. Análise de portfólio antes.", "premiacao": "Dinheiro — top 3 em vendas AB no período.", "alvo": "Cliente final + vendedores", "onde": "Ouro • A • B • C-Regular"}, {"tipo": "MACRO", "acao": "Festival de Prêmios", "duracao": "30 dias", "mecanica": "Ação grande aplicada nas dentais MAIORES. Pode ser dental específica ou competição entre dentais. Meta de 40% de crescimento sobre o mesmo período do ano anterior.", "premiacao": "Top 20 em vendas premiados, com premiação ESPECIAL para o top 3 (em dinheiro, com escalas premium).", "alvo": "Cliente final + vendedores", "onde": "Ouro • A"}, {"tipo": "MICRO", "acao": "Estoura Balão", "duracao": "15 a 30 dias", "mecanica": "A cada R$ 299,00 em American Burrs num único pedido, o cliente estoura 1 balão para ganhar brinde. Promoção acumulativa (vários balões por compra).", "premiacao": "Brindes físicos: pasta polimento Nano Diamantada, fita Ultratape, escova polimento, microaplicador Ultrabrush, ponta Invicta, escova Robinson, Kit Cunha.", "alvo": "Cliente final da dental", "onde": "Ouro • A • B • C-Regular • C-Observação"}, {"tipo": "MICRO", "acao": "Explosão de Vendas", "duracao": "1 a 4 semanas", "mecanica": "Dinâmica para vendedores da dental. A cada R$ 299,00 em AB num único pedido OU a cada produto-selecionado vendido, o vendedor estoura um balão (formatos: roleta, envelope, balão).", "premiacao": "Brindes. Premia o vendedor da dental, não o cliente final.", "alvo": "Vendedor da dental", "onde": "Ouro • A • B • C-Regular"}, {"tipo": "MICRO", "acao": "Blitz Externa", "duracao": "1 dia (1/2 período mínimo)", "mecanica": "Visitas em consultórios. Mínimo 5 clientes. Executivo AB acompanha o vendedor da dental. Foco em NOVOS clientes ou RECONQUISTA. Meta: R$ 1.000 em sell-out por ação.", "premiacao": "— (não tem premiação direta; é ação de expansão)", "alvo": "Novos clientes / clientes inativos", "onde": "Ouro • A • B"}, {"tipo": "MICRO", "acao": "Blitz Interna (phone)", "duracao": "1 dia", "mecanica": "Mesmo objetivo da Blitz Externa, mas por ligações + listas de transmissão. Ação direcionada a clientes selecionados.", "premiacao": "— (ação de relacionamento)", "alvo": "Clientes selecionados", "onde": "A • B • C-Regular • C-Observação"}, {"tipo": "MICRO", "acao": "Cliente Oculto", "duracao": "Durante macro", "mecanica": "Até 3 clientes ocultos contratados pela AB ligam/visitam a dental sem dia ou horário específico, solicitando orçamento. A dental é avaliada pelos retornos.", "premiacao": "Avaliação interna — feedback à dental. Pode entrar em ranking de reconhecimento.", "alvo": "Time de vendas da dental (avaliação)", "onde": "Ouro • A • B"}, {"tipo": "MICRO", "acao": "Presentão American Burrs", "duracao": "1 dia", "mecanica": "No mês de aniversário da dental, verba de até R$ 300,00 para coffee com o time de vendas, condicionada à realização de um treinamento sobre produtos e estratégias da marca.", "premiacao": "Coffee + Kit Festa.", "alvo": "Time da dental", "onde": "Ouro • A • B • C-Regular"}, {"tipo": "EDUC.", "acao": "Curso OTR (Educacional)", "duracao": "2 dias (D-1 + D)", "mecanica": "Curso oferecido pelo Educacional. Cada EC participa de pelo menos 1 OTR por mês. Demanda presença do EC no dia anterior + dia do evento.", "premiacao": "Treinamento técnico (não tem prêmio).", "alvo": "Time vendas da dental + EC", "onde": "Todas — cada EC tem que rodar 1/mês"}]</script>
+<script id="data-carteiras" type="application/json">{"SUPERVISOR": {"label": "Estratégicas (Supervisão)", "papel": "Supervisão — cargo em contratação, hoje sob a gerência", "n_dentais": 2, "sellout_total": 12419487.49, "sem_dado": 0, "dentais": [{"dental": "DENTAL HSB GRUPO", "executivo": "ROGÉRIO", "cluster": "OURO", "sellout": 11097985.49, "tem_dado": true}, {"dental": "DENTAL SURYA", "executivo": "ROGÉRIO", "cluster": "A", "sellout": 1321502, "tem_dado": true}], "peso_pct": 62.8}, "LUANA": {"label": "Luana", "papel": "Gestora de Contas", "n_dentais": 15, "sellout_total": 3262821.9899999993, "sem_dado": 3, "dentais": [{"dental": "DENTAL SÃO SEBASTIÃO", "executivo": "AMANDA", "cluster": "C", "sellout": 157409.96, "tem_dado": true}, {"dental": "DENTAL TERESINA", "executivo": "AMANDA", "cluster": "C", "sellout": 177958.6, "tem_dado": true}, {"dental": "DENTAL KOSMOS", "executivo": "EDUARDO", "cluster": "B", "sellout": 126070.56999999999, "tem_dado": true}, {"dental": "DENTAL MEDSUL", "executivo": "EDUARDO", "cluster": "A", "sellout": 1316532.3599999999, "tem_dado": true}, {"dental": "DENTAL NORONHA", "executivo": "EDUARDO", "cluster": "B", "sellout": 158872.7, "tem_dado": true}, {"dental": "DENTAL MV", "executivo": "FELIPE", "cluster": "B", "sellout": 34633.600000000006, "tem_dado": true}, {"dental": "DENTAL ODONTOPAZ", "executivo": "FELIPE", "cluster": "B", "sellout": 168930.8500000001, "tem_dado": true}, {"dental": "DENTAL MED GRUPO", "executivo": "HYORRAN", "cluster": "C", "sellout": 191089.59, "tem_dado": true}, {"dental": "DENTAL PADRÃO", "executivo": "HYORRAN", "cluster": "C", "sellout": 47967.48, "tem_dado": true}, {"dental": "DENTAL SAUDENTAL GRUPO", "executivo": "HYORRAN", "cluster": "A", "sellout": 529639.59, "tem_dado": true}, {"dental": "DENTAL FENIX", "executivo": "TIAGO", "cluster": "C", "sellout": 78348.86000000002, "tem_dado": true}, {"dental": "DENTAL BRASIL SC", "executivo": "TIAGO", "cluster": "B", "sellout": 275367.83, "tem_dado": true}, {"dental": "DENTAL ODONTO BOND / HOME DENTAL", "executivo": "FELIPE", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL SANTA CLARA", "executivo": "TIAGO", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL ORTOPREV", "executivo": "AMANDA", "cluster": "—", "sellout": null, "tem_dado": false}], "peso_pct": 16.5}, "GC2": {"label": "Willian", "papel": "Gestor de Contas", "n_dentais": 14, "sellout_total": 1726474.8300000003, "sem_dado": 4, "dentais": [{"dental": "DENTAL GRUPO SHELF", "executivo": "DANIELLE", "cluster": "C", "sellout": 197207.97, "tem_dado": true}, {"dental": "DENTAL WN ODONTO", "executivo": "DANIELLE", "cluster": "C", "sellout": 148479.07, "tem_dado": true}, {"dental": "DENTAL LABODENTAL", "executivo": "JOSÉ REIS", "cluster": "A", "sellout": 442052.17, "tem_dado": true}, {"dental": "DENTAL ADELAR/ ODONTOPROTESE", "executivo": "LUCIANA", "cluster": "C", "sellout": 61425.71, "tem_dado": true}, {"dental": "DENTAL JC", "executivo": "LUCIANA", "cluster": "B", "sellout": 62558.67, "tem_dado": true}, {"dental": "DENTAL SHOP", "executivo": "MARCELO", "cluster": "A", "sellout": 607342.28, "tem_dado": true}, {"dental": "DENTAL MIURA", "executivo": "JAQUELINE", "cluster": "B", "sellout": 44261.34, "tem_dado": true}, {"dental": "DENTAL FEDERAL DOCTOR", "executivo": "LUCIANA", "cluster": "B", "sellout": 26506.57, "tem_dado": true}, {"dental": "DENTAL GENERAL DOCTOR", "executivo": "JAQUELINE", "cluster": "B", "sellout": 48367.05, "tem_dado": true}, {"dental": "DENTAL ITA", "executivo": "JAQUELINE", "cluster": "B", "sellout": 88274, "tem_dado": true}, {"dental": "DENTAL KAMINSKI", "executivo": "MARCELO", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL ZL", "executivo": "JAQUELINE", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL ELITE", "executivo": "LUCIANA", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL ÚNICA DENTAL", "executivo": "LUCIANA", "cluster": "—", "sellout": null, "tem_dado": false}], "peso_pct": 8.7}, "GC1": {"label": "GC1 — vaga", "papel": "Gestor de Contas (em contratação)", "n_dentais": 13, "sellout_total": 2374829.02, "sem_dado": 4, "dentais": [{"dental": "DENTAL ODONTO CIRÚRGICA", "executivo": "DANIEL", "cluster": "B", "sellout": 206290.66999999998, "tem_dado": true}, {"dental": "DENTAL INTERDENTAL", "executivo": "KAETY", "cluster": "C", "sellout": 245813.05, "tem_dado": true}, {"dental": "DENTAL ORTOLINE", "executivo": "KAETY", "cluster": "C", "sellout": 336684.64, "tem_dado": true}, {"dental": "DENTAL MAC", "executivo": "NAZARETH", "cluster": "C", "sellout": 310876.4, "tem_dado": true}, {"dental": "DENTAL ODONTOMASTER", "executivo": "NAZARETH", "cluster": "C", "sellout": 225154.93, "tem_dado": true}, {"dental": "DENTAL FREE", "executivo": "WANDER", "cluster": "C", "sellout": 188264.34, "tem_dado": true}, {"dental": "DENTAL SORRIA", "executivo": "WANDER", "cluster": "C", "sellout": 283307, "tem_dado": true}, {"dental": "DENTAL CURITIBANA", "executivo": "VILELA", "cluster": "A", "sellout": 481114.19, "tem_dado": true}, {"dental": "DENTAL PROTETIC", "executivo": "KAETY", "cluster": "—", "sellout": 97323.8, "tem_dado": true}, {"dental": "DENTAL SORRISO", "executivo": "DANIEL", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL BRASIL", "executivo": "KAETY", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL ORTO DENTE", "executivo": "WANDER", "cluster": "—", "sellout": null, "tem_dado": false}, {"dental": "DENTAL CENTER URBANA", "executivo": "WANDER", "cluster": "—", "sellout": null, "tem_dado": false}], "peso_pct": 12.0}}</script>
+<script id="data-icp44" type="application/json">[{"dental": "DENTAL SÃO SEBASTIÃO", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "AMANDA", "gc": "LUANA", "months": {"JANEIRO": {"LY": 25204, "META": 28228.480000000003, "REAL": 26428.09}, "FEVEREIRO": {"LY": 52476.79999999999, "META": 58774.015999999996, "REAL": 30140.4}, "MARÇO": {"LY": 47246.84, "META": 52916.4608, "REAL": 21694.59}, "ABRIL": {"LY": 20007.59, "META": 22408.5008, "REAL": 13783}, "MAIO": {"LY": 37918.770000000004, "META": 42469.02240000001, "REAL": 21952}, "JUNHO": {"LY": 19334.18, "META": 21654.281600000002, "REAL": 17854.87}, "JULHO": {"LY": 22278, "META": 24951.36, "REAL": 25557.01}, "AGOSTO": {"LY": 71028, "META": 79551.36, "REAL": 43860.93}, "SETEMBRO": {"LY": 41096.38, "META": 46027.9456, "REAL": 0}, "OUTUBRO": {"LY": 17149, "META": 19206.88, "REAL": 0}, "NOVEMBRO": {"LY": 35374, "META": 39618.880000000005, "REAL": 0}, "DEZEMBRO": {"LY": 17687, "META": 19809.440000000002, "REAL": 0}}}, {"dental": "DENTAL TERESINA", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "AMANDA", "gc": "LUANA", "months": {"JANEIRO": {"LY": 24137, "META": 27033.440000000002, "REAL": 23294.77}, "FEVEREIRO": {"LY": 61055, "META": 68381.6, "REAL": 43844.92}, "MARÇO": {"LY": 36437, "META": 40809.44, "REAL": 43321}, "ABRIL": {"LY": 13713, "META": 15358.560000000001, "REAL": 17110}, "MAIO": {"LY": 12607, "META": 14119.840000000002, "REAL": 16604}, "JUNHO": {"LY": 9110, "META": 10203.2, "REAL": 16554.07}, "JULHO": {"LY": 26835, "META": 30055.200000000004, "REAL": 17229.84}, "AGOSTO": {"LY": 48967.41, "META": 54843.499200000006, "REAL": 0}, "SETEMBRO": {"LY": 25723, "META": 28809.760000000002, "REAL": 0}, "OUTUBRO": {"LY": 25723, "META": 28809.760000000002, "REAL": 0}, "NOVEMBRO": {"LY": 25723, "META": 28809.760000000002, "REAL": 0}, "DEZEMBRO": {"LY": 25723, "META": 28809.760000000002, "REAL": 0}}}, {"dental": "DENTAL ODONTO CIRÚRGICA", "manda_relatorio": "SIM", "top_class": "TOP 10", "cluster": "B", "crescimento": 0.4, "executivo": "DANIEL", "gc": "GC1", "months": {"JANEIRO": {"LY": 14219, "META": 19906.6, "REAL": 27937.87}, "FEVEREIRO": {"LY": 13677, "META": 19147.8, "REAL": 31414}, "MARÇO": {"LY": 31436, "META": 44010.399999999994, "REAL": 60224}, "ABRIL": {"LY": 28255, "META": 39557, "REAL": 28222}, "MAIO": {"LY": 13722, "META": 19210.8, "REAL": 17161}, "JUNHO": {"LY": 7033, "META": 9846.199999999999, "REAL": 11530}, "JULHO": {"LY": 24522, "META": 34330.799999999996, "REAL": 29801.8}, "AGOSTO": {"LY": 32540.54, "META": 45556.756, "REAL": 52394.8}, "SETEMBRO": {"LY": 21124.63, "META": 29574.482, "REAL": 0}, "OUTUBRO": {"LY": 10860, "META": 15203.999999999998, "REAL": 0}, "NOVEMBRO": {"LY": 28677, "META": 40147.799999999996, "REAL": 0}, "DEZEMBRO": {"LY": 12906, "META": 18068.399999999998, "REAL": 0}}}, {"dental": "DENTAL GRUPO SHELF", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "DANIELLE", "gc": "GC2", "months": {"JANEIRO": {"LY": 6128.5699999999915, "META": 6863.998399999991, "REAL": 10589.99}, "FEVEREIRO": {"LY": 41312.18000000008, "META": 46269.6416000001, "REAL": 30393}, "MARÇO": {"LY": 32609.400000000136, "META": 36522.52800000016, "REAL": 58536}, "ABRIL": {"LY": 13900, "META": 15568.000000000002, "REAL": 42319}, "MAIO": {"LY": 9624.699999999992, "META": 10779.663999999992, "REAL": 27483}, "JUNHO": {"LY": 6272.879999999997, "META": 7025.625599999998, "REAL": 8768}, "JULHO": {"LY": 4766, "META": 5337.92, "REAL": 19118.98}, "AGOSTO": {"LY": 53537.26, "META": 59961.73120000001, "REAL": 0}, "SETEMBRO": {"LY": 49269.7, "META": 55182.064, "REAL": 0}, "OUTUBRO": {"LY": 16265, "META": 18216.800000000003, "REAL": 0}, "NOVEMBRO": {"LY": 20377, "META": 22822.24, "REAL": 0}, "DEZEMBRO": {"LY": 7785, "META": 8719.2, "REAL": 0}}}, {"dental": "DENTAL WN ODONTO", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "DANIELLE", "gc": "GC2", "months": {"JANEIRO": {"LY": 7556.03, "META": 8462.7536, "REAL": 3504.18}, "FEVEREIRO": {"LY": 47570.68, "META": 53279.16160000001, "REAL": 26200.84}, "MARÇO": {"LY": 51376.39, "META": 57541.556800000006, "REAL": 56220}, "ABRIL": {"LY": 28066.57, "META": 31434.5584, "REAL": 22082}, "MAIO": {"LY": 19068.71, "META": 21356.9552, "REAL": 15708.57}, "JUNHO": {"LY": 5862.91, "META": 6566.4592, "REAL": 15906.06}, "JULHO": {"LY": 9810.47, "META": 10987.7264, "REAL": 8857.42}, "AGOSTO": {"LY": 42008, "META": 47048.96000000001, "REAL": 36607.13}, "SETEMBRO": {"LY": 26681.53, "META": 29883.3136, "REAL": 0}, "OUTUBRO": {"LY": 15561, "META": 17428.320000000003, "REAL": 0}, "NOVEMBRO": {"LY": 25636, "META": 28712.320000000003, "REAL": 0}, "DEZEMBRO": {"LY": 17362, "META": 19445.440000000002, "REAL": 0}}}, {"dental": "DENTAL KOSMOS", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "B", "crescimento": 0.4, "executivo": "EDUARDO", "gc": "LUANA", "months": {"JANEIRO": {"LY": 6393.34, "META": 8950.676, "REAL": 12147.55}, "FEVEREIRO": {"LY": 20644.11, "META": 28901.753999999997, "REAL": 13643.48}, "MARÇO": {"LY": 18064.28, "META": 25289.992, "REAL": 35524.78}, "ABRIL": {"LY": 17093.63, "META": 23931.082, "REAL": 13046}, "MAIO": {"LY": 14150.67, "META": 19810.938, "REAL": 16979}, "JUNHO": {"LY": 10986, "META": 15380.4, "REAL": 18004.5}, "JULHO": {"LY": 18987.88, "META": 26583.032, "REAL": 16725.26}, "AGOSTO": {"LY": 22592.9, "META": 31630.06, "REAL": 18163.53}, "SETEMBRO": {"LY": 12976.54, "META": 18167.156, "REAL": 0}, "OUTUBRO": {"LY": 13896.15, "META": 19454.609999999997, "REAL": 0}, "NOVEMBRO": {"LY": 15790, "META": 22106, "REAL": 0}, "DEZEMBRO": {"LY": 15790, "META": 22106, "REAL": 0}}}, {"dental": "DENTAL MEDSUL", "manda_relatorio": "SIM", "top_class": "TOP 5", "cluster": "A", "crescimento": 0.25, "executivo": "EDUARDO", "gc": "LUANA", "months": {"JANEIRO": {"LY": 267353.09, "META": 334191.36250000005, "REAL": 335964}, "FEVEREIRO": {"LY": 138656.55000000002, "META": 173320.68750000003, "REAL": 174673}, "MARÇO": {"LY": 169843.84999999998, "META": 212304.81249999997, "REAL": 248838}, "ABRIL": {"LY": 127676.48, "META": 159595.6, "REAL": 122738}, "MAIO": {"LY": 102655.80000000002, "META": 128319.75000000003, "REAL": 129756}, "JUNHO": {"LY": 100270.58, "META": 125338.225, "REAL": 111318}, "JULHO": {"LY": 154377.44, "META": 192971.8, "REAL": 193245.36}, "AGOSTO": {"LY": 183357.83999999994, "META": 229197.29999999993, "REAL": 0}, "SETEMBRO": {"LY": 126435.95, "META": 158044.9375, "REAL": 0}, "OUTUBRO": {"LY": 125355.13, "META": 156693.9125, "REAL": 0}, "NOVEMBRO": {"LY": 127638, "META": 159547.5, "REAL": 0}, "DEZEMBRO": {"LY": 80814, "META": 101017.5, "REAL": 0}}}, {"dental": "DENTAL NORONHA", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "B", "crescimento": 0.4, "executivo": "EDUARDO", "gc": "LUANA", "months": {"JANEIRO": {"LY": 16838.56, "META": 23573.984, "REAL": 28399.55}, "FEVEREIRO": {"LY": 24148.55, "META": 33807.969999999994, "REAL": 28872}, "MARÇO": {"LY": 18747.46, "META": 26246.443999999996, "REAL": 31909.92}, "ABRIL": {"LY": 25709.050000000007, "META": 35992.670000000006, "REAL": 20170}, "MAIO": {"LY": 25408.53999999999, "META": 35571.955999999984, "REAL": 17807}, "JUNHO": {"LY": 20568, "META": 28795.199999999997, "REAL": 12485}, "JULHO": {"LY": 22586, "META": 31620.399999999998, "REAL": 19229.23}, "AGOSTO": {"LY": 17848, "META": 24987.199999999997, "REAL": 0}, "SETEMBRO": {"LY": 17852.58, "META": 24993.612, "REAL": 0}, "OUTUBRO": {"LY": 23337, "META": 32671.8, "REAL": 0}, "NOVEMBRO": {"LY": 21304, "META": 29825.6, "REAL": 0}, "DEZEMBRO": {"LY": 21304, "META": 29825.6, "REAL": 0}}}, {"dental": "DENTAL MV", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "B", "crescimento": 0.4, "executivo": "FELIPE", "gc": "LUANA", "months": {"JANEIRO": {"LY": 1479, "META": 2070.6, "REAL": 2964.8}, "FEVEREIRO": {"LY": 4330, "META": 6062, "REAL": 2400.81}, "MARÇO": {"LY": 3993, "META": 5590.2, "REAL": 9493.69}, "ABRIL": {"LY": 2554, "META": 3575.6, "REAL": 2187}, "MAIO": {"LY": 17325.56, "META": 24255.784, "REAL": 3773}, "JUNHO": {"LY": 8723, "META": 12212.199999999999, "REAL": 3603.15}, "JULHO": {"LY": 11574.19, "META": 16203.866, "REAL": 10211.15}, "AGOSTO": {"LY": 4209.48, "META": 5893.271999999999, "REAL": 0}, "SETEMBRO": {"LY": 6773, "META": 9482.199999999999, "REAL": 0}, "OUTUBRO": {"LY": 6773, "META": 9482.199999999999, "REAL": 0}, "NOVEMBRO": {"LY": 6773, "META": 9482.199999999999, "REAL": 0}, "DEZEMBRO": {"LY": 3386.5, "META": 4741.099999999999, "REAL": 0}}}, {"dental": "DENTAL ODONTOPAZ", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "B", "crescimento": 0.4, "executivo": "FELIPE", "gc": "LUANA", "months": {"JANEIRO": {"LY": 1800, "META": 2520, "REAL": 31065.93000000009}, "FEVEREIRO": {"LY": 3621, "META": 5069.4, "REAL": 5433.68}, "MARÇO": {"LY": 2306.5, "META": 3229.1, "REAL": 97241}, "ABRIL": {"LY": 7009, "META": 9812.599999999999, "REAL": 9203}, "MAIO": {"LY": 7994.7, "META": 11192.58, "REAL": 5354}, "JUNHO": {"LY": 6181, "META": 8653.4, "REAL": 10116.68}, "JULHO": {"LY": 11297, "META": 15815.8, "REAL": 10516.56}, "AGOSTO": {"LY": 9946.17, "META": 13924.637999999999, "REAL": 0}, "SETEMBRO": {"LY": 24361.86, "META": 34106.604, "REAL": 0}, "OUTUBRO": {"LY": 2601, "META": 3641.3999999999996, "REAL": 0}, "NOVEMBRO": {"LY": 2935, "META": 4109, "REAL": 0}, "DEZEMBRO": {"LY": 2601, "META": 3641.3999999999996, "REAL": 0}}}, {"dental": "DENTAL MED GRUPO", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "HYORRAN", "gc": "LUANA", "months": {"JANEIRO": {"LY": 18383.25, "META": 20589.24, "REAL": 18005.489999999998}, "FEVEREIRO": {"LY": 21986.37, "META": 24624.7344, "REAL": 19550.53}, "MARÇO": {"LY": 24230.98, "META": 27138.697600000003, "REAL": 34454}, "ABRIL": {"LY": 23681, "META": 26522.72, "REAL": 29164.75}, "MAIO": {"LY": 16670, "META": 18670.4, "REAL": 38594.05}, "JUNHO": {"LY": 11098, "META": 12429.760000000002, "REAL": 28427.629999999997}, "JULHO": {"LY": 12040, "META": 13484.800000000001, "REAL": 22893.14}, "AGOSTO": {"LY": 38805.89, "META": 43462.59680000001, "REAL": 39273.19}, "SETEMBRO": {"LY": 20862, "META": 23365.440000000002, "REAL": 0}, "OUTUBRO": {"LY": 20862, "META": 23365.440000000002, "REAL": 0}, "NOVEMBRO": {"LY": 20862, "META": 23365.440000000002, "REAL": 0}, "DEZEMBRO": {"LY": 20862, "META": 23365.440000000002, "REAL": 0}}}, {"dental": "DENTAL PADRÃO", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "HYORRAN", "gc": "LUANA", "months": {"JANEIRO": {"LY": 24500, "META": 27440.000000000004, "REAL": 4832.38}, "FEVEREIRO": {"LY": 17146, "META": 19203.52, "REAL": 11384.36}, "MARÇO": {"LY": 16060, "META": 17987.2, "REAL": 17157.95}, "ABRIL": {"LY": 38778.87, "META": 43432.33440000001, "REAL": 5927}, "MAIO": {"LY": 38778.87, "META": 43432.33440000001, "REAL": 4373}, "JUNHO": {"LY": 23069.01, "META": 25837.2912, "REAL": 4292.79}, "JULHO": {"LY": 7482, "META": 8379.84, "REAL": 0}, "AGOSTO": {"LY": 16150.49, "META": 18088.5488, "REAL": 15821.51}, "SETEMBRO": {"LY": 22746, "META": 25475.520000000004, "REAL": 0}, "OUTUBRO": {"LY": 22746, "META": 25475.520000000004, "REAL": 0}, "NOVEMBRO": {"LY": 22746, "META": 25475.520000000004, "REAL": 0}, "DEZEMBRO": {"LY": 22746, "META": 25475.520000000004, "REAL": 0}}}, {"dental": "DENTAL SAUDENTAL GRUPO", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "A", "crescimento": 0.25, "executivo": "HYORRAN", "gc": "LUANA", "months": {"JANEIRO": {"LY": 34220.51, "META": 42775.637500000004, "REAL": 41249.44}, "FEVEREIRO": {"LY": 82368.20000000001, "META": 102960.25000000001, "REAL": 99920.54999999999}, "MARÇO": {"LY": 96168.09, "META": 120210.11249999999, "REAL": 170585.12}, "ABRIL": {"LY": 44616, "META": 55770, "REAL": 58346.47}, "MAIO": {"LY": 40293.85, "META": 50367.3125, "REAL": 58823}, "JUNHO": {"LY": 36323.36, "META": 45404.2, "REAL": 27745}, "JULHO": {"LY": 35710, "META": 44637.5, "REAL": 72970.01}, "AGOSTO": {"LY": 96424.83, "META": 120531.0375, "REAL": 0}, "SETEMBRO": {"LY": 82272.33, "META": 102840.4125, "REAL": 0}, "OUTUBRO": {"LY": 55108.88, "META": 68886.09999999999, "REAL": 0}, "NOVEMBRO": {"LY": 28042.260000000002, "META": 35052.825000000004, "REAL": 0}, "DEZEMBRO": {"LY": 24765.55, "META": 30956.9375, "REAL": 0}}}, {"dental": "DENTAL LABODENTAL", "manda_relatorio": "SIM", "top_class": "TOP 10", "cluster": "A", "crescimento": 0.25, "executivo": "JOSÉ REIS", "gc": "GC2", "months": {"JANEIRO": {"LY": 37144, "META": 46430, "REAL": 42463.03}, "FEVEREIRO": {"LY": 84758, "META": 105947.5, "REAL": 158645.6}, "MARÇO": {"LY": 69052, "META": 86315, "REAL": 74762}, "ABRIL": {"LY": 43057, "META": 53821.25, "REAL": 65484}, "MAIO": {"LY": 61951.54, "META": 77439.425, "REAL": 33699}, "JUNHO": {"LY": 34527, "META": 43158.75, "REAL": 27753}, "JULHO": {"LY": 40223, "META": 50278.75, "REAL": 39245.54}, "AGOSTO": {"LY": 123512.06, "META": 154390.075, "REAL": 0}, "SETEMBRO": {"LY": 108053, "META": 135066.25, "REAL": 0}, "OUTUBRO": {"LY": 56231, "META": 70288.75, "REAL": 0}, "NOVEMBRO": {"LY": 38951, "META": 48688.75, "REAL": 0}, "DEZEMBRO": {"LY": 38951, "META": 48688.75, "REAL": 0}}}, {"dental": "DENTAL INTERDENTAL", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "KAETY", "gc": "GC1", "months": {"JANEIRO": {"LY": 30217.979999999974, "META": 33844.13759999997, "REAL": 23788}, "FEVEREIRO": {"LY": 36402.29999999999, "META": 40770.575999999994, "REAL": 37547}, "MARÇO": {"LY": 50728.27000000002, "META": 56815.66240000002, "REAL": 34038}, "ABRIL": {"LY": 33603.71, "META": 37636.1552, "REAL": 33026}, "MAIO": {"LY": 33359, "META": 37362.08, "REAL": 39553}, "JUNHO": {"LY": 35882, "META": 40187.840000000004, "REAL": 33887}, "JULHO": {"LY": 48224.14, "META": 54011.0368, "REAL": 43974.05}, "AGOSTO": {"LY": 39727.57, "META": 44494.8784, "REAL": 0}, "SETEMBRO": {"LY": 50405.57, "META": 56454.2384, "REAL": 0}, "OUTUBRO": {"LY": 47410, "META": 53099.200000000004, "REAL": 0}, "NOVEMBRO": {"LY": 40919, "META": 45829.280000000006, "REAL": 0}, "DEZEMBRO": {"LY": 17362.65, "META": 19446.168000000005, "REAL": 0}}}, {"dental": "DENTAL ORTOLINE", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "KAETY", "gc": "GC1", "months": {"JANEIRO": {"LY": 32572.58, "META": 36481.289600000004, "REAL": 40466.5}, "FEVEREIRO": {"LY": 41521.25, "META": 46503.8, "REAL": 35361}, "MARÇO": {"LY": 35289.21, "META": 39523.9152, "REAL": 57273}, "ABRIL": {"LY": 45515.68, "META": 50977.56160000001, "REAL": 36485}, "MAIO": {"LY": 35435.13, "META": 39687.3456, "REAL": 73277}, "JUNHO": {"LY": 38486.8, "META": 43105.21600000001, "REAL": 52321.08}, "JULHO": {"LY": 35170.24, "META": 39390.6688, "REAL": 41501.06}, "AGOSTO": {"LY": 41809.91, "META": 46827.09920000001, "REAL": 0}, "SETEMBRO": {"LY": 25171.46, "META": 28192.035200000002, "REAL": 0}, "OUTUBRO": {"LY": 35836, "META": 40136.32000000001, "REAL": 0}, "NOVEMBRO": {"LY": 56244, "META": 62993.280000000006, "REAL": 0}, "DEZEMBRO": {"LY": 29206, "META": 32710.720000000005, "REAL": 0}}}, {"dental": "DENTAL ADELAR/ ODONTOPROTESE", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "LUCIANA", "gc": "GC2", "months": {"JANEIRO": {"LY": 15715, "META": 17600.800000000003, "REAL": 5638.51}, "FEVEREIRO": {"LY": 20667, "META": 23147.04, "REAL": 9035.92}, "MARÇO": {"LY": 12215, "META": 13680.800000000001, "REAL": 12703.07}, "ABRIL": {"LY": 7708, "META": 8632.960000000001, "REAL": 7090}, "MAIO": {"LY": 8308, "META": 9304.960000000001, "REAL": 6131.88}, "JUNHO": {"LY": 9664, "META": 10823.68, "REAL": 7113}, "JULHO": {"LY": 8489.54, "META": 9508.284800000001, "REAL": 13713.33}, "AGOSTO": {"LY": 25212.95, "META": 28238.504000000004, "REAL": 0}, "SETEMBRO": {"LY": 15152.6, "META": 16970.912, "REAL": 0}, "OUTUBRO": {"LY": 10230, "META": 11457.6, "REAL": 0}, "NOVEMBRO": {"LY": 5677, "META": 6358.240000000001, "REAL": 0}, "DEZEMBRO": {"LY": 2392, "META": 2679.0400000000004, "REAL": 0}}}, {"dental": "DENTAL JC", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "B", "crescimento": 0.4, "executivo": "LUCIANA", "gc": "GC2", "months": {"JANEIRO": {"LY": 4300, "META": 6020, "REAL": 6915.86}, "FEVEREIRO": {"LY": 7300, "META": 10220, "REAL": 9337.32}, "MARÇO": {"LY": 13842, "META": 19378.8, "REAL": 17560.84}, "ABRIL": {"LY": 6586.5, "META": 9221.099999999999, "REAL": 8588}, "MAIO": {"LY": 8323, "META": 11652.199999999999, "REAL": 8334}, "JUNHO": {"LY": 6070, "META": 8498, "REAL": 6068}, "JULHO": {"LY": 7735, "META": 10829, "REAL": 5754.65}, "AGOSTO": {"LY": 22789.72, "META": 31905.608, "REAL": 0}, "SETEMBRO": {"LY": 8650, "META": 12110, "REAL": 0}, "OUTUBRO": {"LY": 8650, "META": 12110, "REAL": 0}, "NOVEMBRO": {"LY": 8650, "META": 12110, "REAL": 0}, "DEZEMBRO": {"LY": 8650, "META": 12110, "REAL": 0}}}, {"dental": "DENTAL SHOP", "manda_relatorio": "SIM", "top_class": "TOP 5", "cluster": "A", "crescimento": 0.25, "executivo": "MARCELO", "gc": "GC2", "months": {"JANEIRO": {"LY": 36292.81, "META": 45366.0125, "REAL": 55032.28}, "FEVEREIRO": {"LY": 87843, "META": 109803.75, "REAL": 99031}, "MARÇO": {"LY": 122819, "META": 153523.75, "REAL": 165076}, "ABRIL": {"LY": 56155, "META": 70193.75, "REAL": 80062}, "MAIO": {"LY": 49996, "META": 62495, "REAL": 58819}, "JUNHO": {"LY": 57113.77, "META": 71392.2125, "REAL": 56225}, "JULHO": {"LY": 111493.78, "META": 139367.225, "REAL": 93097}, "AGOSTO": {"LY": 191804.70999999886, "META": 239755.88749999856, "REAL": 292866.18}, "SETEMBRO": {"LY": 81216.76, "META": 101520.95, "REAL": 0}, "OUTUBRO": {"LY": 68016, "META": 85020, "REAL": 0}, "NOVEMBRO": {"LY": 42333, "META": 52916.25, "REAL": 0}, "DEZEMBRO": {"LY": 33354, "META": 41692.5, "REAL": 0}}}, {"dental": "DENTAL MAC", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "NAZARETH", "gc": "GC1", "months": {"JANEIRO": {"LY": 26096, "META": 29227.520000000004, "REAL": 36097.59}, "FEVEREIRO": {"LY": 69004.69, "META": 77285.25280000002, "REAL": 89333.47}, "MARÇO": {"LY": 70831.91, "META": 79331.73920000001, "REAL": 51976.71}, "ABRIL": {"LY": 29306.74, "META": 32823.548800000004, "REAL": 34725.02}, "MAIO": {"LY": 29982.2, "META": 33580.064000000006, "REAL": 35174.91}, "JUNHO": {"LY": 20028.49, "META": 22431.908800000005, "REAL": 27080.43}, "JULHO": {"LY": 39074.63, "META": 43763.5856, "REAL": 36488.27}, "AGOSTO": {"LY": 110662.48, "META": 123941.97760000001, "REAL": 0}, "SETEMBRO": {"LY": 52036.31, "META": 58280.6672, "REAL": 0}, "OUTUBRO": {"LY": 35940.87, "META": 40253.77440000001, "REAL": 0}, "NOVEMBRO": {"LY": 25649.27, "META": 28727.1824, "REAL": 0}, "DEZEMBRO": {"LY": 15639.52, "META": 17516.262400000003, "REAL": 0}}}, {"dental": "DENTAL ODONTOMASTER", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "NAZARETH", "gc": "GC1", "months": {"JANEIRO": {"LY": 18109, "META": 20282.08, "REAL": 15023.99}, "FEVEREIRO": {"LY": 84266.35, "META": 94378.31200000002, "REAL": 57729.26}, "MARÇO": {"LY": 65367.41, "META": 73211.4992, "REAL": 37394.23}, "ABRIL": {"LY": 33282.94, "META": 37276.89280000001, "REAL": 15419}, "MAIO": {"LY": 29843.71, "META": 33424.955200000004, "REAL": 44305}, "JUNHO": {"LY": 20029.12, "META": 22432.614400000002, "REAL": 22598}, "JULHO": {"LY": 43691, "META": 48933.920000000006, "REAL": 32685.45}, "AGOSTO": {"LY": 81970.98, "META": 91807.4976, "REAL": 0}, "SETEMBRO": {"LY": 50254.34, "META": 56284.8608, "REAL": 0}, "OUTUBRO": {"LY": 20094, "META": 22505.280000000002, "REAL": 0}, "NOVEMBRO": {"LY": 12270, "META": 13742.400000000001, "REAL": 0}, "DEZEMBRO": {"LY": 9972, "META": 11168.640000000001, "REAL": 0}}}, {"dental": "DENTAL HSB GRUPO", "manda_relatorio": "SIM", "top_class": "TOP 1", "cluster": "OURO", "crescimento": 0.25, "executivo": "ROGÉRIO", "gc": "SUPERVISOR", "months": {"JANEIRO": {"LY": 1158236, "META": 1447795, "REAL": 1365281}, "FEVEREIRO": {"LY": 1941740, "META": 2427175, "REAL": 2118704.01}, "MARÇO": {"LY": 1664300, "META": 2080375, "REAL": 2342768.29}, "ABRIL": {"LY": 1092843, "META": 1366053.75, "REAL": 1269122}, "MAIO": {"LY": 1127223, "META": 1409028.75, "REAL": 1282213.19}, "JUNHO": {"LY": 1144656, "META": 1430820, "REAL": 1219785}, "JULHO": {"LY": 1549958, "META": 1937447.5, "REAL": 1500112}, "AGOSTO": {"LY": 2225856, "META": 2782320, "REAL": 0}, "SETEMBRO": {"LY": 1464451, "META": 1830563.75, "REAL": 0}, "OUTUBRO": {"LY": 1240612, "META": 1550765, "REAL": 0}, "NOVEMBRO": {"LY": 1361034, "META": 1701292.5, "REAL": 0}, "DEZEMBRO": {"LY": 642197, "META": 802746.25, "REAL": 0}}}, {"dental": "DENTAL SURYA", "manda_relatorio": "SIM", "top_class": "TOP 5", "cluster": "A", "crescimento": 0.25, "executivo": "ROGÉRIO", "gc": "SUPERVISOR", "months": {"JANEIRO": {"LY": 171221, "META": 214026.25, "REAL": 184140}, "FEVEREIRO": {"LY": 191770, "META": 239712.5, "REAL": 214264}, "MARÇO": {"LY": 199028, "META": 248785, "REAL": 180748}, "ABRIL": {"LY": 205823, "META": 257278.75, "REAL": 168564}, "MAIO": {"LY": 189646, "META": 237057.5, "REAL": 170085}, "JUNHO": {"LY": 184104, "META": 230130, "REAL": 186600}, "JULHO": {"LY": 227072, "META": 283840, "REAL": 217101}, "AGOSTO": {"LY": 223623, "META": 279528.75, "REAL": 264341}, "SETEMBRO": {"LY": 219419, "META": 274273.75, "REAL": 0}, "OUTUBRO": {"LY": 195111, "META": 243888.75, "REAL": 0}, "NOVEMBRO": {"LY": 149950, "META": 187437.5, "REAL": 0}, "DEZEMBRO": {"LY": 103220, "META": 129025, "REAL": 0}}}, {"dental": "DENTAL FENIX", "manda_relatorio": "SIM", "top_class": "TOP 30", "cluster": "C", "crescimento": 0.12, "executivo": "TIAGO", "gc": "LUANA", "months": {"JANEIRO": {"LY": 9760, "META": 10931.2, "REAL": 9083.87}, "FEVEREIRO": {"LY": 13777, "META": 15430.240000000002, "REAL": 10611}, "MARÇO": {"LY": 27952, "META": 31306.24, "REAL": 14640}, "ABRIL": {"LY": 16484, "META": 18462.08, "REAL": 14678.14}, "MAIO": {"LY": 16949.96, "META": 18983.9552, "REAL": 9734}, "JUNHO": {"LY": 11109, "META": 12442.080000000002, "REAL": 8351}, "JULHO": {"LY": 15932, "META": 17843.84, "REAL": 11250.85}, "AGOSTO": {"LY": 14796.97999999999, "META": 16572.61759999999, "REAL": 34659.68}, "SETEMBRO": {"LY": 12867.5, "META": 14411.600000000002, "REAL": 0}, "OUTUBRO": {"LY": 10851.23, "META": 12153.3776, "REAL": 0}, "NOVEMBRO": {"LY": 9745, "META": 10914.400000000001, "REAL": 0}, "DEZEMBRO": {"LY": 3643, "META": 4080.1600000000003, "REAL": 0}}}, {"dental": "DENTAL FREE", "manda_relatorio": "SIM", "top_class": "TOP 5", "cluster": "C", "crescimento": 0.12, "executivo": "WANDER", "gc": "GC1", "months": {"JANEIRO": {"LY": 23494.56, "META": 26313.907200000005, "REAL": 23328.74}, "FEVEREIRO": {"LY": 25700, "META": 28784.000000000004, "REAL": 26668.43}, "MARÇO": {"LY": 27692, "META": 31015.040000000005, "REAL": 33737}, "ABRIL": {"LY": 20351, "META": 22793.120000000003, "REAL": 27069}, "MAIO": {"LY": 25904.23, "META": 29012.737600000004, "REAL": 27473}, "JUNHO": {"LY": 25636.55, "META": 28712.936, "REAL": 24594}, "JULHO": {"LY": 25619.15, "META": 28693.448000000004, "REAL": 25394.17}, "AGOSTO": {"LY": 33440.45, "META": 37453.304000000004, "REAL": 22621.45}, "SETEMBRO": {"LY": 27334.34, "META": 30614.460800000004, "REAL": 0}, "OUTUBRO": {"LY": 29108.4, "META": 32601.408000000003, "REAL": 0}, "NOVEMBRO": {"LY": 21272.62, "META": 23825.3344, "REAL": 0}, "DEZEMBRO": {"LY": 16349.49, "META": 18311.4288, "REAL": 0}}}, {"dental": "DENTAL SORRIA", "manda_relatorio": "SIM", "top_class": "TOP 5", "cluster": "C", "crescimento": 0.12, "executivo": "WANDER", "gc": "GC1", "months": {"JANEIRO": {"LY": 31424, "META": 35194.880000000005, "REAL": 39137}, "FEVEREIRO": {"LY": 68773, "META": 77025.76000000001, "REAL": 68149}, "MARÇO": {"LY": 46754, "META": 52364.48, "REAL": 57798}, "ABRIL": {"LY": 20696, "META": 23179.52, "REAL": 26001}, "MAIO": {"LY": 18626.24, "META": 20861.388800000004, "REAL": 18404}, "JUNHO": {"LY": 16735.21, "META": 18743.4352, "REAL": 19545}, "JULHO": {"LY": 28289, "META": 31683.680000000004, "REAL": 54273}, "AGOSTO": {"LY": 89305.29, "META": 100021.92480000001, "REAL": 154629.43}, "SETEMBRO": {"LY": 42263.17, "META": 47334.750400000004, "REAL": 0}, "OUTUBRO": {"LY": 18764.87, "META": 21016.6544, "REAL": 0}, "NOVEMBRO": {"LY": 40919, "META": 45829.280000000006, "REAL": 0}, "DEZEMBRO": {"LY": 9498, "META": 10637.76, "REAL": 0}}}, {"dental": "DENTAL MIURA", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "B", "crescimento": 0.4, "executivo": "JAQUELINE", "gc": "GC2", "months": {"JANEIRO": {"LY": 1973.67, "META": 2763.138, "REAL": 4374.91}, "FEVEREIRO": {"LY": 4193.28, "META": 5870.592, "REAL": 5150.32}, "MARÇO": {"LY": 7043.35, "META": 9860.69, "REAL": 9512.92}, "ABRIL": {"LY": 5726.54, "META": 8017.155999999999, "REAL": 9026.35}, "MAIO": {"LY": 4578.84, "META": 6410.376, "REAL": 5621.21}, "JUNHO": {"LY": 9980.77, "META": 13973.078, "REAL": 5617.08}, "JULHO": {"LY": 3133.36, "META": 4386.704, "REAL": 4958.55}, "AGOSTO": {"LY": 4078.99, "META": 5710.585999999999, "REAL": 12130.16}, "SETEMBRO": {"LY": 5048.43, "META": 7067.802, "REAL": 0}, "OUTUBRO": {"LY": 8183.11, "META": 11456.354, "REAL": null}, "NOVEMBRO": {"LY": 8350.12, "META": 11690.168, "REAL": null}, "DEZEMBRO": {"LY": 3673.15, "META": 5142.41, "REAL": null}}}, {"dental": "DENTAL FEDERAL DOCTOR", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "B", "crescimento": 0.4, "executivo": "LUCIANA", "gc": "GC2", "months": {"JANEIRO": {"LY": 2307.57, "META": 3230.598, "REAL": 3816.94}, "FEVEREIRO": {"LY": 3752.44, "META": 5253.416, "REAL": 2294.97}, "MARÇO": {"LY": 2814, "META": 3939.6, "REAL": 4061.34}, "ABRIL": {"LY": 3317.16, "META": 4644.023999999999, "REAL": 3157.76}, "MAIO": {"LY": 2888.03, "META": 4043.242, "REAL": 5008.47}, "JUNHO": {"LY": 3935.85, "META": 5510.19, "REAL": 3198.96}, "JULHO": {"LY": 2983.92, "META": 4177.488, "REAL": 4968.13}, "AGOSTO": {"LY": 3692.64, "META": 5169.696, "REAL": 6375.02}, "SETEMBRO": {"LY": 4389.3, "META": 6145.0199999999995, "REAL": 0}, "OUTUBRO": {"LY": 6958.25, "META": 9741.55, "REAL": null}, "NOVEMBRO": {"LY": 2047.21, "META": 2866.094, "REAL": null}, "DEZEMBRO": {"LY": 3137.91, "META": 4393.074, "REAL": null}}}, {"dental": "DENTAL BRASIL SC", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "B", "crescimento": 0.4, "executivo": "TIAGO", "gc": "LUANA", "months": {"JANEIRO": {"LY": 8088.11, "META": 11323.354, "REAL": 21233.32}, "FEVEREIRO": {"LY": 15574.97, "META": 21804.958, "REAL": 27604.66}, "MARÇO": {"LY": 15709.34, "META": 21993.075999999997, "REAL": 73149.64}, "ABRIL": {"LY": 12264.01, "META": 17169.613999999998, "REAL": 49354.35}, "MAIO": {"LY": 14879.01, "META": 20830.613999999998, "REAL": 29253.25}, "JUNHO": {"LY": 13081.58, "META": 18314.212, "REAL": 27254.3}, "JULHO": {"LY": 11616.36, "META": 16262.904, "REAL": 47518.31}, "AGOSTO": {"LY": 36120.36, "META": 50568.504, "REAL": 46708.83}, "SETEMBRO": {"LY": 7200.59, "META": 10080.826, "REAL": 0}, "OUTUBRO": {"LY": 8874.5, "META": 12424.3, "REAL": null}, "NOVEMBRO": {"LY": 13866.1, "META": 19412.54, "REAL": null}, "DEZEMBRO": {"LY": 13558.78, "META": 18982.292, "REAL": null}}}, {"dental": "DENTAL GENERAL DOCTOR", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "B", "crescimento": 0.4, "executivo": "JAQUELINE", "gc": "GC2", "months": {"JANEIRO": {"LY": 4029.4, "META": 5641.16, "REAL": 6535.95}, "FEVEREIRO": {"LY": 6853.05, "META": 9594.27, "REAL": 4297.9}, "MARÇO": {"LY": 6735.85, "META": 9430.19, "REAL": 8781.6}, "ABRIL": {"LY": 3487.55, "META": 4882.57, "REAL": 9772.6}, "MAIO": {"LY": 4599.3, "META": 6439.0199999999995, "REAL": 7777.1}, "JUNHO": {"LY": 2225.4, "META": 3115.56, "REAL": 4291.4}, "JULHO": {"LY": 4054.7, "META": 5676.579999999999, "REAL": 6910.5}, "AGOSTO": {"LY": 5358.55, "META": 7501.969999999999, "REAL": 8678.1}, "SETEMBRO": {"LY": 7747.35, "META": 10846.289999999999, "REAL": 0}, "OUTUBRO": {"LY": 6374.3, "META": 8924.02, "REAL": null}, "NOVEMBRO": {"LY": 3912.4, "META": 5477.36, "REAL": null}, "DEZEMBRO": {"LY": 3094.9, "META": 4332.86, "REAL": null}}}, {"dental": "DENTAL ITA", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "B", "crescimento": 0.4, "executivo": "JAQUELINE", "gc": "GC2", "months": {"JANEIRO": {"LY": 10951, "META": 15331.4, "REAL": 13161}, "FEVEREIRO": {"LY": 16378, "META": 22929.199999999997, "REAL": 18765}, "MARÇO": {"LY": 19516, "META": 27322.399999999998, "REAL": 27754}, "ABRIL": {"LY": 18757, "META": 26259.8, "REAL": 28594}, "MAIO": {"LY": 12383, "META": 17336.199999999997, "REAL": null}, "JUNHO": {"LY": 17383, "META": 24336.199999999997, "REAL": null}, "JULHO": {"LY": 28180, "META": 39452, "REAL": null}, "AGOSTO": {"LY": 24279, "META": 33990.6, "REAL": null}, "SETEMBRO": {"LY": 18518, "META": 25925.199999999997, "REAL": 0}, "OUTUBRO": {"LY": 17562, "META": 24586.8, "REAL": null}, "NOVEMBRO": {"LY": 22917, "META": 32083.8, "REAL": null}, "DEZEMBRO": {"LY": 9397, "META": 13155.8, "REAL": null}}}, {"dental": "DENTAL CURITIBANA", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": "A", "crescimento": 0.25, "executivo": "VILELA", "gc": "GC1", "months": {"JANEIRO": {"LY": 20174.18, "META": 25217.725, "REAL": 27069.28}, "FEVEREIRO": {"LY": 75633.83, "META": 94542.2875, "REAL": 111320.17}, "MARÇO": {"LY": 234526.19, "META": 293157.7375, "REAL": 232555.26}, "ABRIL": {"LY": 32003.84, "META": 40004.8, "REAL": 44080.04}, "MAIO": {"LY": 18408.15, "META": 23010.1875, "REAL": 21760.73}, "JUNHO": {"LY": 12080.45, "META": 15100.5625, "REAL": 12330.11}, "JULHO": {"LY": 52444.8, "META": 65556, "REAL": 31998.6}, "AGOSTO": {"LY": 253105.75, "META": 316382.1875, "REAL": 262054.23}, "SETEMBRO": {"LY": 55717.67, "META": 69647.0875, "REAL": 0}, "OUTUBRO": {"LY": 29136.81, "META": 36421.012500000004, "REAL": null}, "NOVEMBRO": {"LY": 8925.95, "META": 11157.4375, "REAL": null}, "DEZEMBRO": {"LY": 7834.52, "META": 9793.150000000001, "REAL": null}}}, {"dental": "DENTAL PROTETIC", "manda_relatorio": "SIM", "top_class": "INCLUSÃO", "cluster": null, "crescimento": null, "executivo": "KAETY", "gc": "GC1", "months": {"JANEIRO": {"LY": 11587.05, "META": 11587.05, "REAL": 11003.8}, "FEVEREIRO": {"LY": 13309.94, "META": 13309.94, "REAL": 12701.91}, "MARÇO": {"LY": 13174.71, "META": 13174.71, "REAL": 15481.45}, "ABRIL": {"LY": 13569.5, "META": 13569.5, "REAL": 11329.66}, "MAIO": {"LY": 10939.54, "META": 10939.54, "REAL": 15895.42}, "JUNHO": {"LY": 15223.58, "META": 15223.58, "REAL": 14811.22}, "JULHO": {"LY": 13991.8, "META": 13991.8, "REAL": 16100.34}, "AGOSTO": {"LY": 10015.43, "META": 10015.43, "REAL": 16366.01}, "SETEMBRO": {"LY": 14243.99, "META": 14243.99, "REAL": 0}, "OUTUBRO": {"LY": 14448.11, "META": 14448.11, "REAL": null}, "NOVEMBRO": {"LY": 9940.05, "META": 9940.05, "REAL": null}, "DEZEMBRO": {"LY": 8680.76, "META": 8680.76, "REAL": null}}}, {"dental": "DENTAL KAMINSKI", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "MARCELO", "gc": "GC2", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL SORRISO", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "DANIEL", "gc": "GC1", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ODONTO BOND / HOME DENTAL", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "FELIPE", "gc": "LUANA", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ZL", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "JAQUELINE", "gc": "GC2", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL BRASIL", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "KAETY", "gc": "GC1", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ELITE", "manda_relatorio": "CONFIRMAR", "top_class": null, "cluster": null, "crescimento": null, "executivo": "LUCIANA", "gc": "GC2", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ÚNICA DENTAL", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "LUCIANA", "gc": "GC2", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ORTO DENTE", "manda_relatorio": "CONFIRMAR", "top_class": null, "cluster": null, "crescimento": null, "executivo": "WANDER", "gc": "GC1", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL PROODONTO", "manda_relatorio": "CONFIRMAR", "top_class": null, "cluster": null, "crescimento": null, "executivo": "LUCAS", "gc": null, "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL CENTER URBANA", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "WANDER", "gc": "GC1", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL SANTA CLARA", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "TIAGO", "gc": "LUANA", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}, {"dental": "DENTAL ORTOPREV", "manda_relatorio": "SIM", "top_class": null, "cluster": null, "crescimento": null, "executivo": "AMANDA", "gc": "LUANA", "months": {"JANEIRO": {"LY": null, "META": 0, "REAL": null}, "FEVEREIRO": {"LY": null, "META": 0, "REAL": null}, "MARÇO": {"LY": null, "META": 0, "REAL": null}, "ABRIL": {"LY": null, "META": 0, "REAL": null}, "MAIO": {"LY": null, "META": 0, "REAL": null}, "JUNHO": {"LY": null, "META": 0, "REAL": null}, "JULHO": {"LY": null, "META": 0, "REAL": null}, "AGOSTO": {"LY": null, "META": 0, "REAL": null}, "SETEMBRO": {"LY": null, "META": 0, "REAL": 0}, "OUTUBRO": {"LY": null, "META": 0, "REAL": null}, "NOVEMBRO": {"LY": null, "META": 0, "REAL": null}, "DEZEMBRO": {"LY": null, "META": 0, "REAL": null}}}]</script>
+<script>
+const PLAYBOOK = JSON.parse(document.getElementById('data-playbook').textContent);
+const CARTEIRAS = JSON.parse(document.getElementById('data-carteiras').textContent);
+
+// ---------------- Navigation ----------------
+const TABS = [
+  {id:'objetivo', label:'Objetivo'},
+  {id:'organograma', label:'Organograma'},
+  {id:'resultados', label:'Resultados ICP44'},
+  {id:'playbook', label:'Playbook de Ações'},
+  {id:'ciclo', label:'Ciclo das Ações'},
+  {id:'visoes', label:'Visões Trade × GC'},
+  {id:'rituais', label:'Rituais e Premiações'},
+];
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = TABS.map(t=>`<button class="nav-btn" data-tab="${t.id}">${t.label}</button>`).join('');
+  nav.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> showTab(btn.dataset.tab));
+  });
+}
+function showTab(id){
+  document.querySelectorAll('.panel-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===id));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+renderNav();
+showTab('objetivo');
+
+// ---------------- Ciclo das ações ----------------
+const CYCLE = [
+  {t:"GC propõe", d:"Cada GC propõe as ações para os clientes da sua carteira, com base em resultados das ações anteriores e consulta aos executivos de contas."},
+  {t:"Triagem do Supervisor", d:"As ações são submetidas ao supervisor, que faz uma triagem inicial."},
+  {t:"Aprovação do Gerente", d:"Aprovação das ações triadas junto ao Gerente de Desenvolvimento de Mercado."},
+  {t:"Entrada no Monday", d:"As ações aprovadas são inputadas no Monday pelo GC/Supervisor."},
+  {t:"Ativação", d:"Formalização junto à dental através do departamento de Trade e/ou o Executivo de Contas."},
+  {t:"Execução", d:"Execução da ação através do executivo de contas, que ativa, treina, acompanha e cobra o relatório junto ao gestor de categoria."},
+  {t:"Relatório da dental", d:"A dental envia o relatório de resultados da ação."},
+  {t:"Apuração", d:"O gestor de contas apura os resultados, faz o input no Monday e compartilha com TI para inserção no BI."},
+  {t:"Pagamento", d:"O supervisor confere e solicita o pagamento pela plataforma We Score, Expresso e/ou produto bonificado."},
+];
+document.getElementById('cycle-steps').innerHTML = CYCLE.map((c,i)=>
+  `<div class="cycle-step"><div class="num">${i+1}</div><h4>${c.t}</h4><p>${c.d}</p></div>` +
+  (i<CYCLE.length-1 ? `<div class="cycle-arrow">›</div>` : '')
+).join('');
+
+// ---------------- Premiações ----------------
+const premioMap = {};
+PLAYBOOK.forEach(p=>{
+  const key = p.premiacao.split('—')[0].split('.')[0].trim();
+  if(!premioMap[p.acao]) premioMap[p.acao] = p.premiacao;
+});
+const premioHtml = Object.entries(premioMap).map(([acao,premio])=>
+  `<div class="premio-card"><h5>${acao}</h5><p>${premio}</p></div>`
+).join('');
+document.getElementById('premio-grid-ciclo').innerHTML = premioHtml;
+
+// ---------------- Playbook ----------------
+let pbFilter = 'TODOS';
+function renderPbTabs(){
+  const tipos = ['TODOS', ...Array.from(new Set(PLAYBOOK.map(p=>p.tipo)))];
+  document.getElementById('pb-tabs').innerHTML = tipos.map(t=>
+    `<button class="pb-tab ${t===pbFilter?'active':''}" data-tipo="${t}">${t}</button>`
+  ).join('');
+  document.querySelectorAll('.pb-tab').forEach(b=> b.addEventListener('click', ()=>{ pbFilter=b.dataset.tipo; renderPbTabs(); renderPbList(); }));
+}
+function renderPbList(){
+  const items = pbFilter==='TODOS' ? PLAYBOOK : PLAYBOOK.filter(p=>p.tipo===pbFilter);
+  document.getElementById('pb-list').innerHTML = items.map((p,i)=>`
+    <div class="action-card">
+      <div class="action-head" data-idx="${i}-${pbFilter}">
+        <h4>${p.acao}</h4>
+        <span class="meta">${p.duracao} <span class="chevron">▾</span></span>
+      </div>
+      <div class="action-body">
+        <div class="row"><b>Mecânica:</b> ${p.mecanica}</div>
+        <div class="row"><b>Premiação:</b> ${p.premiacao}</div>
+        <div class="row"><b>Para quem:</b> ${p.alvo}</div>
+        <div class="row"><b>Onde aplica:</b> ${p.onde}</div>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('#pb-list .action-head').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      h.classList.toggle('open');
+      h.nextElementSibling.classList.toggle('open');
+    });
+  });
+}
+renderPbTabs();
+renderPbList();
+
+// ---------------- Resultados ICP44 ----------------
+const ICP44 = JSON.parse(document.getElementById('data-icp44').textContent);
+const MONTHS_R = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO'];
+const MONTHS_FULL_R = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+const MONTH_SHORT_R = {'JANEIRO':'Jan','FEVEREIRO':'Fev','MARÇO':'Mar','ABRIL':'Abr','MAIO':'Mai','JUNHO':'Jun','JULHO':'Jul','AGOSTO':'Ago','SETEMBRO':'Set','OUTUBRO':'Out','NOVEMBRO':'Nov','DEZEMBRO':'Dez'};
+const QUARTERS_R = {'1º Tri':['JANEIRO','FEVEREIRO','MARÇO'], '2º Tri':['ABRIL','MAIO','JUNHO'], '3º Tri':['JULHO','AGOSTO','SETEMBRO'], '4º Tri':['OUTUBRO','NOVEMBRO','DEZEMBRO']};
+let resultadosPeriod = 'ytd';
+
+function resolvePeriodR(period){
+  if(period==='ytd') return {months: MONTHS_R, label:'Acumulado Jan–Jul'};
+  if(QUARTERS_R[period]) return {months: QUARTERS_R[period], label: period};
+  return {months:[period], label: MONTH_SHORT_R[period]};
+}
+function buildTabsR(containerId, current, onSelect){
+  const el = document.getElementById(containerId);
+  el.innerHTML='';
+  const items = [['ytd','Acumulado'], ...Object.keys(QUARTERS_R).map(q=>[q,q]), ...MONTHS_FULL_R.map(m=>[m,MONTH_SHORT_R[m]])];
+  items.forEach(([key,label])=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(key===current?' active':'');
+    btn.textContent=label;
+    btn.onclick=()=>onSelect(key);
+    el.appendChild(btn);
+  });
+}
+const fmtBRLr = v => (v===null||v===undefined||isNaN(v)) ? '—' : new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
+const fmtPctR = v => (v===null||v===undefined||isNaN(v)) ? '—' : v.toFixed(1)+'%';
+
+function recordsForPeriod(months){
+  return ICP44.map(d=>{
+    let ly=0, meta=0, real=0, temDado=false;
+    months.forEach(m=>{
+      const md = d.months[m];
+      if(md && md.LY!=null){ ly+=md.LY; meta+=(md.META||0); real+=(md.REAL||0); temDado=true; }
+    });
+    if(!temDado) return {dental:d.dental, cluster:d.cluster, executivo:d.executivo, gc:d.gc, top_class:d.top_class, temDado:false};
+    return {dental:d.dental, cluster:d.cluster, executivo:d.executivo, gc:d.gc, top_class:d.top_class,
+            ly, meta, real, ating_pct: meta? real/meta*100 : null, temDado:true};
+  });
+}
+function summarizeR(recs){
+  const comDado = recs.filter(r=>r.temDado);
+  const meta = comDado.reduce((a,r)=>a+r.meta,0);
+  const real = comDado.reduce((a,r)=>a+r.real,0);
+  const ly = comDado.reduce((a,r)=>a+r.ly,0);
+  return {n: recs.length, n_com_dado: comDado.length, n_sem_dado: recs.length-comDado.length,
+           meta, real, ating_pct: meta? real/meta*100:null, yoy_pct: ly? (real/ly-1)*100:null};
+}
+const FUTURE_ONLY_MONTHS = ['SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+function statusPillR(r, isFuturePeriod){
+  if(!r.temDado) return `<span class="status-pill status-media">sem dado</span>`;
+  if(isFuturePeriod) return `<span class="status-pill status-media">Planejado</span>`;
+  if(r.ating_pct===null) return `<span class="status-pill status-media">pendente</span>`;
+  if(r.ating_pct>=120) return `<span class="status-pill status-super">Supermeta</span>`;
+  if(r.ating_pct>=100) return `<span class="status-pill status-alta">Meta</span>`;
+  return `<span class="status-pill status-baixa">Abaixo</span>`;
+}
+function groupByR(recs, key){
+  const groups={};
+  recs.forEach(r=>{ const k=r[key]||'—'; (groups[k]=groups[k]||[]).push(r); });
+  const out={};
+  Object.keys(groups).sort().forEach(k=> out[k]=summarizeR(groups[k]));
+  return out;
+}
+function renderGroupTableR(tableId, group, labelCol){
+  const el = document.getElementById(tableId);
+  const keys = Object.keys(group).sort((a,b)=>group[b].meta-group[a].meta);
+  let head = `<tr><th>${labelCol}</th><th class="num">Dentais</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">% Atingimento</th></tr>`;
+  let rows = keys.map(k=>{
+    const v=group[k];
+    return `<tr><td>${k}${v.n_sem_dado?` <span style="color:var(--muted); font-size:11px;">(${v.n_sem_dado} sem dado)</span>`:''}</td><td class="num">${v.n}</td><td class="num">${fmtBRLr(v.meta)}</td><td class="num">${fmtBRLr(v.real)}</td><td class="num">${fmtPctR(v.ating_pct)}</td></tr>`;
+  }).join('');
+  el.innerHTML = head+rows;
+}
+function buildResultadosGcFilter(){
+  const sel = document.getElementById('filter-resultados-gc');
+  const gcs = Array.from(new Set(ICP44.map(d=>d.gc).filter(Boolean))).sort();
+  sel.innerHTML = '<option value="all">Todos</option>' + gcs.map(g=>`<option value="${g}">${g}</option>`).join('');
+  sel.addEventListener('change', renderResultadosDetail);
+}
+function renderResultadosDetail(){
+  const {months} = resolvePeriodR(resultadosPeriod);
+  const isFuturePeriod = months.every(m=>FUTURE_ONLY_MONTHS.includes(m));
+  let recs = recordsForPeriod(months);
+  const gcVal = document.getElementById('filter-resultados-gc').value || 'all';
+  if(gcVal!=='all') recs = recs.filter(r=>r.gc===gcVal);
+  recs.sort((a,b)=> (b.meta||0)-(a.meta||0));
+  const el = document.getElementById('table-resultados-detail');
+  let head = `<tr><th>Dental</th><th>Classificação</th><th>Cluster</th><th>Executivo</th><th>GC</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">%</th><th>Status</th></tr>`;
+  let body = recs.map(r=>`<tr>
+      <td>${r.dental}</td><td>${r.top_class||'—'}</td><td>${r.cluster||'—'}</td><td>${r.executivo||'—'}</td><td>${r.gc||'—'}</td>
+      <td class="num">${r.temDado?fmtBRLr(r.meta):'—'}</td>
+      <td class="num">${(r.temDado && !isFuturePeriod)?fmtBRLr(r.real):(r.temDado?'—':'—')}</td>
+      <td class="num">${(r.temDado && !isFuturePeriod)?fmtPctR(r.ating_pct):'—'}</td>
+      <td>${statusPillR(r, isFuturePeriod)}</td>
+    </tr>`).join('');
+  if(recs.length===0) body = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">Nenhuma dental no filtro selecionado.</td></tr>`;
+  el.innerHTML = head+body;
+}
+function renderYtdBannerResultados(){
+  const recs = recordsForPeriod(MONTHS_R);
+  const o = summarizeR(recs);
+  document.getElementById('ytd-banner-resultados').innerHTML = `
+    <div><div class="yb-label">Meta acumulada</div><div class="yb-value">${fmtBRLr(o.meta)}</div><div class="yb-foot">Jan–Jul/26</div></div>
+    <div><div class="yb-label">Realizado acumulado</div><div class="yb-value">${fmtBRLr(o.real)}</div><div class="yb-foot">Jan–Jul/26</div></div>
+    <div><div class="yb-label">% Atingimento</div><div class="yb-value">${fmtPctR(o.ating_pct)}</div><div class="yb-foot">YoY: ${fmtPctR(o.yoy_pct)}</div></div>
+    <div><div class="yb-label">Dentais</div><div class="yb-value">${o.n_com_dado} / ${o.n}</div><div class="yb-foot">com dado / total (${o.n_sem_dado} aguardando)</div></div>
+  `;
+}
+function renderResultadosBody(){
+  const {months,label} = resolvePeriodR(resultadosPeriod);
+  const isFuturePeriod = months.every(m=>FUTURE_ONLY_MONTHS.includes(m));
+  const recs = recordsForPeriod(months);
+  const o = summarizeR(recs);
+  document.getElementById('resultados-period-label-1').textContent = label;
+  document.getElementById('resultados-period-label-2').textContent = label;
+  document.getElementById('resultados-period-label-3').textContent = label;
+  if(isFuturePeriod){
+    document.getElementById('kpi-resultados').innerHTML = `
+      <div class="kpi"><div class="label">Meta planejada</div><div class="value">${fmtBRLr(o.meta)}</div></div>
+      <div class="kpi"><div class="label">Dentais com meta</div><div class="value">${o.n_com_dado}</div></div>
+      <div class="kpi"><div class="label">Status</div><div class="value" style="font-size:14px;">Período futuro</div></div>
+      <div class="kpi"><div class="label">Aguardando dado</div><div class="value">${o.n_sem_dado}</div><div class="foot">dentais sem meta ainda</div></div>
+    `;
+  } else {
+    document.getElementById('kpi-resultados').innerHTML = `
+      <div class="kpi"><div class="label">Meta</div><div class="value">${fmtBRLr(o.meta)}</div></div>
+      <div class="kpi"><div class="label">Realizado</div><div class="value">${fmtBRLr(o.real)}</div></div>
+      <div class="kpi"><div class="label">% Atingimento</div><div class="value">${fmtPctR(o.ating_pct)}</div></div>
+      <div class="kpi"><div class="label">YoY</div><div class="value">${fmtPctR(o.yoy_pct)}</div><div class="foot">${o.n_sem_dado} dentais sem dado ainda</div></div>
+    `;
+  }
+  renderGroupTableR('table-resultados-classif', groupByR(recs,'cluster'), 'Classificação');
+  renderGroupTableR('table-resultados-exec', groupByR(recs,'executivo'), 'Executivo');
+  renderResultadosDetail();
+  buildTabsR('tabs-resultados', resultadosPeriod, k=>{ resultadosPeriod=k; renderResultadosBody(); });
+}
+renderYtdBannerResultados();
+buildResultadosGcFilter();
+renderResultadosBody();
+
+// ---------------- Organograma / Carteira ----------------
+function fmtBRL(v){ return v==null ? '—' : 'R$ ' + v.toLocaleString('pt-BR',{maximumFractionDigits:0}); }
+function renderGcGrid(){
+  const grid = document.getElementById('gc-grid');
+  grid.innerHTML = Object.entries(CARTEIRAS).map(([key,c])=>`
+    <div class="gc-card" data-gc="${key}">
+      <div class="papel">${c.papel}</div>
+      <div class="nome">${c.label}</div>
+      <div class="stat"><b>${c.n_dentais}</b> dentais${c.sem_dado ? ` <span style="color:var(--muted); font-weight:400;">(${c.sem_dado} sem sell-out ainda)</span>` : ''}</div>
+      <div class="stat"><b>${fmtBRL(c.sellout_total)}</b> em sell-out (${c.peso_pct}% do total)</div>
+    </div>`).join('');
+  grid.querySelectorAll('.gc-card').forEach(card=>{
+    card.addEventListener('click', ()=> selectGc(card.dataset.gc));
+  });
+}
+function selectGc(key){
+  document.querySelectorAll('.gc-card').forEach(c=> c.classList.toggle('selected', c.dataset.gc===key));
+  const c = CARTEIRAS[key];
+  document.getElementById('gc-detail-box').style.display='block';
+  document.getElementById('gc-detail-title').textContent = `${c.label} — ${c.n_dentais} dentais`;
+  const rows = c.dentais.slice().sort((a,b)=> (b.sellout||0)-(a.sellout||0));
+  document.getElementById('gc-detail-table').innerHTML =
+    '<tr><th>Dental</th><th>Executivo</th><th>Cluster</th><th class="num">Sell-out Jan–Jul</th></tr>' +
+    rows.map(d=>`<tr>
+      <td>${d.dental}</td><td>${d.executivo||'—'}</td><td>${d.cluster}</td>
+      <td style="text-align:right;">${d.tem_dado ? d.sellout.toLocaleString('pt-BR',{maximumFractionDigits:0}) : '<span class="status-pill status-media">sem dado ainda</span>'}</td>
+    </tr>`).join('');
+  const box = document.getElementById('gc-detail-box');
+  if(box.scrollIntoView) box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+renderGcGrid();
+selectGc('LUANA');
+
+document.getElementById('premio-org-head').addEventListener('click', function(){
+  this.classList.toggle('open');
+  document.getElementById('premio-org-body').classList.toggle('open');
+});
+</script>
+</body>
+</html>
